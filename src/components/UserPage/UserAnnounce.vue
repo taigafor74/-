@@ -32,6 +32,7 @@
     margin: -0.878735vw 0 0.585823vw;
     border-bottom: 0.058582vw solid #7c7a7a;
   }
+  //1
   .text-area {
     textarea {
       color: white;
