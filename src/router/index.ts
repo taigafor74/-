@@ -22,7 +22,19 @@ const router = createRouter({
     {
       path: "/user",
       name: "user",
-      component: () => import("../views/UserPage.vue"),
+      component: () => import("../views/UserPage/UserPage.vue"),
+      children: [
+        {
+          path: "video",
+          name: "userVideo",
+          component: () => import("../views/UserPage/UserVideoPage.vue"),
+        },
+        {
+          path: "main",
+          name: "userMain",
+          component: () => import("../views/UserPage/UserMainPage.vue"),
+        },
+      ],
     },
     // {
     //   path: '/about',

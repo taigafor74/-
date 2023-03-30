@@ -19,7 +19,7 @@ const showLoginState = showLogin();
 </script>
 
 <style lang="scss" scoped>
-$dark-color: #000000;
+$dark-color: rgb(18, 18, 18);
 
 .main-container {
   display: flex;

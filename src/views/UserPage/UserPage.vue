@@ -2,6 +2,7 @@
   <div class="user-page-container">
     <UserHeader />
     <UserMenu />
+    <div class="user-page-mt"><RouterView></RouterView></div>
   </div>
 </template>
 
@@ -14,7 +15,9 @@ import UserMenu from "@/components/UserPage/UserMenu.vue";
 .user-page-container {
   margin: 0 auto;
   width: 75.161101vw;
-  height: 100vh;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(18, 18, 18);
+  .user-page-mt {
+    margin-top: 1vw;
+  }
 }
 </style>

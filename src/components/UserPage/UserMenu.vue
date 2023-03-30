@@ -4,6 +4,8 @@
       <div
         class="user-menu-left-item"
         @mouseenter="test($event, item.index)"
+        @click="routerto(item.index, item.routerPath)"
+        @mouseleave="resetCurosor"
         v-for="item in userMenuArr"
         :key="item.index"
         ref="userMenuLeftItem"
@@ -40,21 +42,26 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 type userMenu = {
   title: string;
   iconSrc: any;
   index: number;
+  routerPath: string;
 };
+enum enumIndex {
+  "/user/main" = 0,
+  dynamic = 1,
+  "/user/video" = 2,
+  collect = 3,
+  setting = 4,
+}
+const router = useRouter();
+const route = useRoute();
 const cursor = ref<HTMLElement | any>(null);
-let currentIndex: number = 0;
+let currentIndex: any = enumIndex[route.path as any];
 let userMenuLeftItem = ref<HTMLElement | any>(null);
-let ItemWidth: number = 0;
-let marginRight: number = 0;
 onMounted(() => {
-  ItemWidth = userMenuLeftItem.value[0].offsetWidth;
-  marginRight = +getComputedStyle(
-    userMenuLeftItem.value[0] as HTMLElement
-  ).marginRight.replace("px", " ");
   cursorGoto(currentIndex);
   userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
 });
@@ -63,32 +70,45 @@ const userMenuArr: userMenu[] = reactive([
     title: "主页",
     iconSrc: "../../assets/icon/home_fill.png",
     index: 0,
+    routerPath: "userMain",
   },
   {
     title: "动态",
     iconSrc: "../../assets/icon/铃铛.png",
     index: 1,
+    routerPath: "userMain",
   },
   {
     title: "投稿",
     iconSrc: "../../assets/icon/投稿.png",
     index: 2,
+    routerPath: "userVideo",
   },
   {
     title: "收藏",
     iconSrc: "../../assets/icon/收藏.png",
     index: 3,
+    routerPath: "userMain",
   },
   {
     title: "设置",
     iconSrc: "../../assets/icon/设置.png",
     index: 4,
+    routerPath: "userVideo",
   },
 ]);
+
+function routerto(index: number, routerPath: string) {
+  currentIndex = index;
+  router.push({
+    name: routerPath,
+    query: {},
+  });
+}
 function getAssetsImages(url: string) {
   return new URL(url, import.meta.url).href;
 }
-function cursorGoto(index: number) {
+function cursorGoto(index: any) {
   cursor.value.style.left = index * 20 + "%";
 }
 function test(e: MouseEvent, index: number) {
@@ -97,6 +117,15 @@ function test(e: MouseEvent, index: number) {
   });
   userMenuLeftItem.value[index].classList.add("cursor-active");
   cursorGoto(index);
+}
+function resetCurosor() {
+  userMenuLeftItem.value.forEach((item: HTMLElement) => {
+    item.classList.remove("cursor-active");
+  });
+  console.log(currentIndex);
+
+  userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
+  cursorGoto(currentIndex);
 }
 </script>
 
@@ -120,8 +149,9 @@ function test(e: MouseEvent, index: number) {
     .user-menu-left-item {
       height: 100%;
       display: flex;
+      cursor: pointer;
       align-items: center;
-      margin-right: 1.816052vw;
+      padding-right: 1.816052vw;
       img {
         margin-right: 0.234329vw;
         width: 1.171646vw;
