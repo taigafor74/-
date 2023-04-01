@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "axios": "^1.3.4",
+    "dplayer": "^1.27.1",
+    "hls.js": "^1.3.5",
     "pinia": "^2.0.32",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   },
   "devDependencies": {
+    "@types/dplayer": "^1.25.2",
+    "@types/hls.js": "^1.0.0",
     "@types/node": "^18.15.10",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/tsconfig": "^0.1.3",
