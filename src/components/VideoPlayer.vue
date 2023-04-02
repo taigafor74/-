@@ -1,13 +1,7 @@
 <template>
   <div class="player-container" ref="playerContainer">
     <div class="video-box">
-      <video
-        ref="videoPlayer"
-        loop="true"
-        @click="toggleVideo"
-        @play="setInfo"
-        @pause="clearAll"
-      ></video>
+      <video ref="videoPlayer" loop="true" @click="toggleVideo"></video>
     </div>
     <div class="video-box-bottom">
       <div
@@ -35,12 +29,13 @@
               min="0"
               max="100"
               step="1"
+              @input="changeVolume"
             />
           </div>
           <div class="time">
-            <span>00:00</span>
+            <span ref="nowTime">00:00</span>
             <span>/</span>
-            <span>00:00</span>
+            <span ref="totalTime">00:00</span>
           </div>
         </div>
         <div class="right">
@@ -59,15 +54,26 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import Hls from "hls.js/dist/hls.min.js";
+
 const videoPlayer = ref();
 const playerContainer = ref();
 const progressBar = ref();
 const nowBar = ref();
 const preloadBar = ref();
+const totalTime = ref();
+const nowTime = ref();
 let timer: any = null;
+let countTimer: any = null;
 let loadedFragments: any = [];
 let isDragging = ref(false);
 const hls = new Hls();
+onMounted(() => {
+  setInfo();
+});
+function changeVolume(e: Event) {
+  const volumeSlider = e.target as HTMLInputElement;
+  videoPlayer.value.volume = parseInt(volumeSlider.value) / 100;
+}
 function setProgress(
   cur: number,
   total: number,
@@ -94,28 +100,30 @@ function setInfo() {
   if (Hls.isSupported()) {
     hls.loadSource("http://localhost:3000/1680352225597/1680352225597.m3u8"); // 替换为你的m3u8文件路径
     hls.attachMedia(videoPlayer.value);
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      timer = setInterval(updateProgress, 50);
-    });
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {});
     hls.on(Hls.Events.FRAG_LOADED, (event: any, data: any) => {
       // 计算加载的片段数量
       console.log(event);
-
       if (!loadedFragments.includes(data.frag.sn)) {
         loadedFragments.push(data.frag.sn);
       }
       // 获取总片段数量
-      const totalFragments =
-        hls.levels[hls.currentLevel].details.fragments.length;
-      // 更新预加载进度条
-      console.log(loadedFragments.length, totalFragments);
-      updatePreloadProgress(loadedFragments.length, totalFragments);
+      if (hls.levels && hls.levels[hls.currentLevel]) {
+        const totalFragments =
+          hls.levels[hls.currentLevel].details.fragments.length;
+        // 更新预加载进度条
+        console.log(loadedFragments.length, totalFragments);
+        updatePreloadProgress(loadedFragments.length, totalFragments);
+      } else {
+        console.warn("Unable to access level details");
+      }
+    });
+    hls.on(Hls.Events.ERROR, (event: any, data: any) => {
+      console.error("Error event:", event, "Data:", data);
     });
   } else if (videoPlayer.value.canPlayType("application/vnd.apple.mpegurl")) {
-    videoPlayer.value.src =
-      "http://localhost:3000/1680352225597/1680352225597.m3u8"; // 替换为你的m3u8文件路径
     videoPlayer.value.addEventListener("loadedmetadata", () => {
-      timer = setInterval(updateProgress, 50);
+      timer = setInterval(updateProgress, 10);
     });
   } else {
     console.error("该浏览器不支持HLS播放");
@@ -123,12 +131,28 @@ function setInfo() {
 }
 function toggleVideo() {
   if (videoPlayer.value.paused) {
+    setall();
     videoPlayer.value.play();
   } else {
+    clearAll();
     videoPlayer.value.pause();
   }
 }
-
+function setTime() {
+  const player = videoPlayer.value;
+  const total = totalTime.value;
+  const now = nowTime.value;
+  const totalMin = Math.floor(player.duration / 60);
+  const totalSec = Math.floor(player.duration % 60);
+  const nowMin = Math.floor(player.currentTime / 60);
+  const nowSec = Math.floor(player.currentTime % 60);
+  total.innerHTML = `${totalMin < 10 ? "0" + totalMin : totalMin}:${
+    totalSec < 10 ? "0" + totalSec : totalSec
+  }`;
+  now.innerHTML = `${nowMin < 10 ? "0" + nowMin : nowMin}:${
+    nowSec < 10 ? "0" + nowSec : nowSec
+  }`;
+}
 function fullscrean() {
   const playerContainer = videoPlayer.value.closest(".player-container");
   const requestFullScreenMethods = [
@@ -144,7 +168,12 @@ function fullscrean() {
     }
   }
 }
+function setall() {
+  timer = setInterval(updateProgress, 10);
+  countTimer = setInterval(setTime, 10);
+}
 function clearAll() {
+  clearInterval(countTimer);
   clearInterval(timer);
 }
 function gotoHere(e: MouseEvent) {
@@ -176,6 +205,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .player-container {
+  user-select: none;
   &:hover {
     .video-box-bottom .controll {
       height: 45px;
@@ -206,7 +236,7 @@ onUnmounted(() => {
         width: 0;
         height: 5px;
         background-color: rgb(255, 0, 0);
-        transition: width 50ms;
+        transition: width 10ms;
         position: absolute;
         top: 0;
         left: 0;
@@ -215,7 +245,7 @@ onUnmounted(() => {
         width: 0;
         height: 5px;
         background-color: rgba(255, 255, 255, 0.5);
-        transition: width 50ms;
+        transition: width 10ms;
         position: absolute;
         top: 0;
         left: 0;
@@ -271,7 +301,7 @@ onUnmounted(() => {
             &:focus {
               outline: none;
             }
-            -webkit-appearance: none;
+
             cursor: pointer;
             margin-left: 10px;
             width: 0px;

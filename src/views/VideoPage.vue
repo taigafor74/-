@@ -2,6 +2,7 @@
   <div class="video-container">
     <div class="video-left-container">
       <VideoPlayer></VideoPlayer>
+      <!-- <TestPlayer></TestPlayer> -->
       <div ref="videoRef"></div>
     </div>
     <div class="video-right-container"></div>
@@ -10,6 +11,7 @@
 
 <script setup lang="ts">
 import VideoPlayer from "@/components/VideoPlayer.vue";
+import TestPlayer from "@/components/TestPlayer.vue";
 import axios from "axios";
 // import DPlayer from "dplayer";
 // import Hls from "hls.js/dist/hls.min.js";
@@ -154,12 +156,12 @@ import axios from "axios";
   .video-left-container {
     width: 62.272994vw;
     height: 100%;
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0);
   }
   .video-right-container {
     width: 24.077329vw;
     height: 100%;
-    background-color: blue;
+    background-color: rgba(0, 0, 255, 0);
   }
 }
 </style>
