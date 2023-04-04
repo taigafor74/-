@@ -6,6 +6,9 @@
   >
     <div class="video-box">
       <video ref="videoPlayer" loop="true" @click="toggleVideo"></video>
+      <div class="danmaku" ref="danmakuCon" @click="maskDanmaku">
+        <span class="danmakuspan">fuck</span>
+      </div>
     </div>
     <div class="video-box-bottom">
       <div class="setting-con" v-if="showSetting">
@@ -58,9 +61,6 @@
         ref="progressBar"
         @click="gotoHere"
         @mousedown="startDragging"
-        @mousemove="drag"
-        @mouseup="stopDragging"
-        @mouseleave="stopDragging"
       >
         <div class="preload" ref="preloadBar"></div>
         <div class="now" ref="nowBar"></div>
@@ -125,9 +125,9 @@ const nowTime = ref();
 const playImg = ref();
 const settingBmenu = ref();
 const playerRateBox = ref();
+const danmakuCon = ref();
 let timer: any = null;
 let showSetting = ref(false);
-let countTimer: any = null;
 let loadedFragments: any = [];
 let isDragging = ref(false);
 let hls = new Hls();
@@ -139,9 +139,231 @@ let src = "1680539678412";
 let testSrc = ref(
   "http://localhost:3000/1680539678412/720p/1680539678412_720p.m3u8"
 );
+let currentDanmakuIndex = 0;
+//给出100个弹幕的数组
+const danmakuArr = [
+  {
+    text: "diwoajhidjawdiwadwadpiwajdwadpwajp",
+    time: 5,
+    color: "red",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "diwoajhidjawdiwadwadpiwajdwadpwajp",
+    time: 5,
+    color: "red",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "diwoajhidjawdiwadwadpiwajdwadpwajp",
+    time: 5,
+    color: "red",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕2",
+    time: 20,
+    color: "green",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕3",
+    time: 31,
+    color: "blue",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕4",
+    time: 34,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕5",
+    time: 35,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕6",
+    time: 36,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕7",
+    time: 37,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕8",
+    time: 38,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕9",
+    time: 39,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕10",
+    time: 40,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕11",
+    time: 42,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕12",
+    time: 43,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+  {
+    text: "弹幕13",
+    time: 44,
+    color: "#fff",
+    speed: 1,
+    fontSize: 20,
+  },
+];
+
 onMounted(() => {
   setInfo(testSrc.value);
+  danmakuPool.init();
 });
+const danmakuPool = {
+  pool: [] as any,
+  activePool: [] as any,
+  size: 50, // 根据实际需求调整池大小
+  init: function () {
+    for (let i = 0; i < this.size; i++) {
+      const danmaku = document.createElement("span");
+      danmaku.classList.add("danmakuspan");
+      this.pool.push(danmaku);
+    }
+  },
+  getDanmaku: function () {
+    if (this.pool.length > 0) {
+      return this.pool.shift();
+    } else {
+      const danmaku = document.createElement("span");
+      danmaku.classList.add("danmakuspan");
+      return danmaku;
+    }
+  },
+  returnDanmaku: function (danmaku: any) {
+    this.pool.push(danmaku);
+  },
+};
+
+function setDanmaku() {
+  const player = videoPlayer.value;
+  const currentTime = player.currentTime;
+  let width = player.clientWidth;
+  let height = player.clientHeight;
+  if (currentDanmakuIndex < danmakuArr.length) {
+    let time = danmakuArr[currentDanmakuIndex].time;
+    if (time == currentTime.toFixed(0)) {
+      let danmaku = danmakuPool.getDanmaku();
+      let dt = 2;
+      let dtime = Math.random() * 5 + dt;
+      let top = Math.random() * (height - 20);
+      danmakuCon.value.appendChild(danmaku);
+      danmaku.innerText = danmakuArr[currentDanmakuIndex].text;
+      danmaku.style.fontSize = `${danmakuArr[currentDanmakuIndex].fontSize}px`;
+      danmaku.style.color = `${danmakuArr[currentDanmakuIndex].color}`;
+      danmaku.style.top = `${top}px`;
+      danmaku.style.animationDuration = `${dtime}s`;
+      danmaku.addEventListener("animationend", function () {
+        danmakuCon.value.removeChild(danmaku);
+        danmakuPool.returnDanmaku(danmaku);
+        danmakuPool.activePool.splice(
+          danmakuPool.activePool.indexOf(danmaku),
+          1
+        );
+      });
+      danmakuPool.activePool.push(danmaku);
+      currentDanmakuIndex++;
+    }
+  }
+}
+function stopDanmaku() {
+  danmakuPool.activePool.forEach((item: any) => {
+    item.classList.add("paused");
+  });
+}
+function activeDanmaku() {
+  danmakuPool.activePool.forEach((item: any) => {
+    item.classList.remove("paused");
+  });
+}
+function timerCollect() {
+  setDanmaku();
+  setTime();
+  updateProgress();
+}
+function maskDanmaku() {
+  toggleVideo();
+}
+function toggleVideo() {
+  showSetting.value = false;
+  if (videoPlayer.value.paused) {
+    setall();
+    activeDanmaku();
+    playImg.value.src = getAssetsImages("../assets/icon/暂停.png");
+    videoPlayer.value.play();
+  } else {
+    clearAll();
+    stopDanmaku();
+    playImg.value.src = getAssetsImages("../assets/icon/播放.png");
+    videoPlayer.value.pause();
+  }
+}
+function setall() {
+  timer = setInterval(timerCollect, 10);
+}
+function clearAll() {
+  clearInterval(timer);
+}
+function setTime() {
+  const player = videoPlayer.value;
+  const total = totalTime.value;
+  const now = nowTime.value;
+  if (player.currentTime) {
+    const totalMin = Math.floor(player.duration / 60);
+    const totalSec = Math.floor(player.duration % 60);
+    const nowMin = Math.floor(player.currentTime / 60);
+    const nowSec = Math.floor(player.currentTime % 60);
+    total.innerHTML = `${totalMin < 10 ? "0" + totalMin : totalMin}:${
+      totalSec < 10 ? "0" + totalSec : totalSec
+    }`;
+    now.innerHTML = `${nowMin < 10 ? "0" + nowMin : nowMin}:${
+      nowSec < 10 ? "0" + nowSec : nowSec
+    }`;
+  }
+}
 function loadVideoSource(src: any, currentTime?: number) {
   if (hls) {
     hls.destroy();
@@ -259,35 +481,8 @@ function setInfo(src: any) {
     console.error("该浏览器不支持HLS播放");
   }
 }
-function toggleVideo() {
-  showSetting.value = false;
-  if (videoPlayer.value.paused) {
-    setall();
-    playImg.value.src = getAssetsImages("../assets/icon/暂停.png");
-    videoPlayer.value.play();
-  } else {
-    clearAll();
-    playImg.value.src = getAssetsImages("../assets/icon/播放.png");
-    videoPlayer.value.pause();
-  }
-}
 function getAssetsImages(url: string) {
   return new URL(url, import.meta.url).href;
-}
-function setTime() {
-  const player = videoPlayer.value;
-  const total = totalTime.value;
-  const now = nowTime.value;
-  const totalMin = Math.floor(player.duration / 60);
-  const totalSec = Math.floor(player.duration % 60);
-  const nowMin = Math.floor(player.currentTime / 60);
-  const nowSec = Math.floor(player.currentTime % 60);
-  total.innerHTML = `${totalMin < 10 ? "0" + totalMin : totalMin}:${
-    totalSec < 10 ? "0" + totalSec : totalSec
-  }`;
-  now.innerHTML = `${nowMin < 10 ? "0" + nowMin : nowMin}:${
-    nowSec < 10 ? "0" + nowSec : nowSec
-  }`;
 }
 function fullscrean() {
   const playerContainer = videoPlayer.value.closest(".player-container");
@@ -304,14 +499,6 @@ function fullscrean() {
     }
   }
 }
-function setall() {
-  timer = setInterval(updateProgress, 10);
-  countTimer = setInterval(setTime, 10);
-}
-function clearAll() {
-  clearInterval(countTimer);
-  clearInterval(timer);
-}
 function gotoHere(e: MouseEvent) {
   if (videoPlayer.value.currentTime <= 0) return;
   let cur = e.offsetX / progressBar.value.clientWidth;
@@ -321,6 +508,8 @@ function gotoHere(e: MouseEvent) {
 function startDragging(e: MouseEvent) {
   if (videoPlayer.value.currentTime <= 0) return;
   isDragging.value = true;
+  document.addEventListener("mousemove", drag);
+  document.addEventListener("mouseup", stopDragging);
 }
 function drag(e: MouseEvent) {
   if (!isDragging.value) return;
@@ -332,6 +521,8 @@ function drag(e: MouseEvent) {
 function stopDragging(e: MouseEvent) {
   if (!isDragging.value) return;
   isDragging.value = false;
+  document.removeEventListener("mousemove", drag);
+  document.removeEventListener("mouseup", stopDragging);
 }
 
 onUnmounted(() => {
@@ -340,7 +531,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .player-container {
   user-select: none;
   position: relative;
@@ -353,6 +544,7 @@ onUnmounted(() => {
 
   .video-box {
     width: 100%;
+    position: relative;
     video {
       width: 100%;
     }
@@ -363,6 +555,7 @@ onUnmounted(() => {
     width: 100%;
     bottom: 0;
     position: absolute;
+    z-index: 20;
     .setting-con {
       padding-right: 12px;
       width: 100%;
@@ -583,5 +776,36 @@ onUnmounted(() => {
       }
     }
   }
+}
+
+.danmaku {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 10;
+}
+.danmakuspan {
+  position: absolute;
+  right: 100%;
+  font-size: 20px;
+  color: #fff;
+  white-space: nowrap;
+  animation: danmankuAnimate linear 10s;
+}
+@keyframes danmankuAnimate {
+  0% {
+    right: 0%;
+    transform: translate(100%, 0);
+  }
+  100% {
+    right: 100%;
+    transform: translate(0, 0);
+  }
+}
+.paused {
+  animation-play-state: paused !important;
 }
 </style>
