@@ -296,6 +296,7 @@ function setDanmaku() {
       danmaku.style.color = `${danmakuArr[currentDanmakuIndex].color}`;
       danmaku.style.top = `${top}px`;
       danmaku.style.animationDuration = `${dtime}s`;
+      currentDanmakuIndex++;
       danmaku.addEventListener("animationend", function () {
         danmakuCon.value.removeChild(danmaku);
         danmakuPool.returnDanmaku(danmaku);
@@ -305,7 +306,6 @@ function setDanmaku() {
         );
       });
       danmakuPool.activePool.push(danmaku);
-      currentDanmakuIndex++;
     }
   }
 }
