@@ -12,44 +12,31 @@
         <div class="nothing" @click="showSetting = false"></div>
         <div class="setting-box">
           <div class="menu" ref="settingBmenu">
-            <div class="item" @click="showPlayRate" ref="menuItem1">
+            <div class="item" @click="showPlayRate">
               <div class="left">
                 <img src="@/assets/icon/速度.png" /><span>播放速度</span>
               </div>
               <div class="right">
-                <span>{{ nowPlayRate }}x</span
-                ><img src="@/assets/icon/右箭头.png" />
+                <span>1x</span><img src="@/assets/icon/右箭头.png" />
               </div>
             </div>
-            <div class="item" ref="menuItem2" @click="showQuality">
+            <div class="item">
               <div class="left">
                 <img src="@/assets/icon/清晰度.png" /><span>清晰度</span>
               </div>
               <div class="right">
-                <span>{{ nowQuality }}p</span
-                ><img src="@/assets/icon/右箭头.png" />
+                <span>720p</span><img src="@/assets/icon/右箭头.png" />
               </div>
             </div>
           </div>
           <div class="playrate-box" ref="playerRateBox">
             <div class="item" @click="initPlayRate">退出</div>
-            <div
-              class="item"
-              v-for="item in playRateArr"
-              @click="setPlayRate(item)"
-            >
-              {{ item }}
-            </div>
-          </div>
-          <div class="quality-box" ref="qualitybox">
-            <div class="item" @click="initQuality">退出</div>
-            <div
-              class="item"
-              v-for="item in qualityArr"
-              @click="setQuality(item)"
-            >
-              {{ item }}
-            </div>
+            <div class="item">0.5</div>
+            <div class="item">0.75</div>
+            <div class="item">1.0</div>
+            <div class="item">1.25</div>
+            <div class="item">1.5</div>
+            <div class="item">2.0</div>
           </div>
         </div>
       </div>
@@ -112,11 +99,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import Hls from "hls.js/dist/hls.min.js";
+let testSrc =
+  "http://localhost:3000/1680508992107/360p/1680508992107_360p.m3u8";
 const videoPlayer = ref();
-const menuItem1 = ref();
-const menuItem2 = ref();
 const playerContainer = ref();
-const qualitybox = ref();
 const progressBar = ref();
 const nowBar = ref();
 const preloadBar = ref();
@@ -130,93 +116,21 @@ let showSetting = ref(false);
 let countTimer: any = null;
 let loadedFragments: any = [];
 let isDragging = ref(false);
-let hls = new Hls();
-const qualityArr = [360, 480, 720, 1080];
-const playRateArr = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
-const nowPlayRate = ref(1);
-const nowQuality = ref(720);
-let src = "1680539678412";
-let testSrc = ref(
-  "http://localhost:3000/1680539678412/720p/1680539678412_720p.m3u8"
-);
+const hls = new Hls();
 onMounted(() => {
-  setInfo(testSrc.value);
+  setInfo();
 });
-function loadVideoSource(src: any, currentTime?: number) {
-  if (hls) {
-    hls.destroy();
-  }
-  hls = new Hls();
-  hls.loadSource(src);
-  hls.attachMedia(videoPlayer.value);
-  hls.on(Hls.Events.MANIFEST_PARSED, () => {
-    if (currentTime !== undefined) {
-      videoPlayer.value.currentTime = currentTime;
-    }
-  });
-  hls.on(Hls.Events.FRAG_LOADED, (event: any, data: any) => {
-    if (!loadedFragments.includes(data.frag.sn)) {
-      loadedFragments.push(data.frag.sn);
-    }
-    if (hls.levels && hls.levels[hls.currentLevel]) {
-      const totalFragments =
-        hls.levels[hls.currentLevel].details.fragments.length;
-      updatePreloadProgress(loadedFragments.length, totalFragments);
-    } else {
-      console.warn("Unable to access level details");
-    }
-  });
-}
-function getVideoSrc(src: any, quality: any) {
-  return `http://localhost:3000/${src}/${quality}p/${src}_${quality}p.m3u8`;
-}
-function setPlayRate(item: any) {
-  videoPlayer.value.playbackRate = item;
-  nowPlayRate.value = item;
-  initPlayRate();
-}
-function setQuality(quality: any) {
-  const newSrc = getVideoSrc(src, quality);
-  const currentTime = videoPlayer.value.currentTime;
-  loadedFragments = [];
-  loadVideoSource(newSrc, currentTime);
-}
-
 function showPlayRate() {
-  playerRateBox.value.style.visibility = "visible";
-  qualitybox.value.style.visibility = "hidden";
   settingBmenu.value.style.height = "0";
   settingBmenu.value.style.width = "0";
   playerRateBox.value.style.width = "250px";
-  playerRateBox.value.style.height = "310px";
-  menuItem1.value.style.visibility = "hidden";
-  menuItem2.value.style.visibility = "hidden";
-}
-function showQuality() {
-  playerRateBox.value.style.visibility = "hidden";
-  qualitybox.value.style.visibility = "visible";
-  settingBmenu.value.style.height = "0";
-  settingBmenu.value.style.width = "0";
-  qualitybox.value.style.width = "250px";
-  qualitybox.value.style.height = "225px";
-  menuItem1.value.style.visibility = "hidden";
-  menuItem2.value.style.visibility = "hidden";
+  playerRateBox.value.style.height = "auto";
 }
 function initPlayRate() {
   settingBmenu.value.style.width = "250px";
-  settingBmenu.value.style.height = "90px";
+  settingBmenu.value.style.height = "auto";
   playerRateBox.value.style.width = "0";
   playerRateBox.value.style.height = "0";
-  menuItem1.value.style.visibility = "visible";
-  menuItem2.value.style.visibility = "visible";
-}
-function initQuality() {
-  settingBmenu.value.style.width = "250px";
-  settingBmenu.value.style.height = "90px";
-  qualitybox.value.style.width = "0";
-  qualitybox.value.style.height = "0";
-  menuItem1.value.style.visibility = "visible";
-  menuItem2.value.style.visibility = "visible";
 }
 function changeVolume(e: Event) {
   const volumeSlider = e.target as HTMLInputElement;
@@ -244,10 +158,30 @@ function updatePreloadProgress(loadedFragments: any, totalFragments: any) {
   const preload = preloadBar.value;
   setProgress(loadedFragments, totalFragments, pconWidth, preload);
 }
-function setInfo(src: any) {
+function setInfo() {
   if (Hls.isSupported()) {
-    loadVideoSource(src);
-    videoPlayer.value.volume = 0.5;
+    hls.loadSource(testSrc); // 替换为你的m3u8文件路径
+    hls.attachMedia(videoPlayer.value);
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      videoPlayer.value.volume = 0.5;
+    });
+    hls.on(Hls.Events.FRAG_LOADED, (event: any, data: any) => {
+      // 计算加载的片段数量
+      console.log(event);
+      if (!loadedFragments.includes(data.frag.sn)) {
+        loadedFragments.push(data.frag.sn);
+      }
+      // 获取总片段数量
+      if (hls.levels && hls.levels[hls.currentLevel]) {
+        const totalFragments =
+          hls.levels[hls.currentLevel].details.fragments.length;
+        // 更新预加载进度条
+        console.log(loadedFragments.length, totalFragments);
+        updatePreloadProgress(loadedFragments.length, totalFragments);
+      } else {
+        console.warn("Unable to access level details");
+      }
+    });
     hls.on(Hls.Events.ERROR, (event: any, data: any) => {
       console.error("Error event:", event, "Data:", data);
     });
@@ -333,7 +267,6 @@ function stopDragging(e: MouseEvent) {
   if (!isDragging.value) return;
   isDragging.value = false;
 }
-
 onUnmounted(() => {
   clearInterval(timer);
   hls.destroy();
@@ -379,10 +312,10 @@ onUnmounted(() => {
         background: rgba(5, 5, 5, 0.815);
       }
       .menu {
-        transition: 0.3s all;
+        transition: 1s all;
+        background: rgba(5, 5, 5, 0.815);
         width: 250px;
         .item {
-          visibility: visible;
           &:hover {
             background: rgba(52, 52, 52, 0.815);
           }
@@ -417,12 +350,11 @@ onUnmounted(() => {
           }
         }
       }
-      .playrate-box,
-      .quality-box {
+      .playrate-box {
         width: 0;
         height: 0;
-        transition: 0.3s all;
-        visibility: hidden;
+        transition: 1s all;
+        background: rgba(5, 5, 5, 0.815);
         .item {
           &:hover {
             background: rgba(52, 52, 52, 0.815);
