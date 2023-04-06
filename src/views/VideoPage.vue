@@ -1,7 +1,10 @@
 <template>
   <div class="video-container">
     <div class="video-left-container">
+      <VideoTitle></VideoTitle>
       <VideoPlayer></VideoPlayer>
+      <VideoReact></VideoReact>
+      <VideoDesc></VideoDesc>
       <VideoComment></VideoComment>
       <Transition name="fade">
         <div class="fixed-input" v-if="show">
@@ -16,10 +19,13 @@
 </template>
 
 <script setup lang="ts">
-import VideoPlayer from "@/components/videoPage/VideoPlayer/VideoPlayer.vue";
-import VideoComment from "@/components/videoPage/VideoComment/VideoComment.vue";
+import VideoPlayer from "@/components/videoPage/VideoLeft/VideoPlayer/VideoPlayer.vue";
+import VideoComment from "@/components/videoPage/VideoLeft/VideoComment/VideoComment.vue";
 import VideoRight from "@/components/videoPage/VideoRight/VideoRight.vue";
-import VideoCommentInput from "@/components/videoPage/VideoComment/VideoCommentInput.vue";
+import VideoReact from "@/components/videoPage/VideoLeft/VideoReact.vue";
+import VideoTitle from "@/components/videoPage/VideoLeft/VideoTitle.vue";
+import VideoDesc from "@/components/videoPage/VideoLeft/VideoDesc.vue";
+import VideoCommentInput from "@/components/videoPage/VideoLeft/VideoComment/VideoCommentInput.vue";
 import { useVideoStore } from "@/stores/VideoStore";
 import { computed } from "vue";
 
