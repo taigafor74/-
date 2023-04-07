@@ -394,12 +394,12 @@ function toggleVideo() {
   if (videoPlayer.value.paused) {
     setall();
     activeDanmaku();
-    playImg.value.src = getAssetsImages("../assets/icon/暂停.png");
+    playImg.value.src = getAssetsImages("../../../../assets/icon/暂停.png");
     videoPlayer.value.play();
   } else {
     clearAll();
     stopDanmaku();
-    playImg.value.src = getAssetsImages("../assets/icon/播放.png");
+    playImg.value.src = getAssetsImages("../../../../assets/icon/播放.png");
     videoPlayer.value.pause();
   }
 }
@@ -888,7 +888,7 @@ onUnmounted(() => {
     height: 300px;
     background: green;
     bottom: 100%;
-    z-index: 99;
+    z-index: -99;
     left: 45px;
   }
   .danmaku-bar-con {

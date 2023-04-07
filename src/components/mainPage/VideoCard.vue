@@ -1,6 +1,6 @@
 <template>
   <div class="video-card-container">
-    <div class="video-card">
+    <div class="video-card" @click="gotoVideo">
       <div class="img-box">
         <img
           src="https://i.ytimg.com/vi/z9eE1qzoI8M/hq720.jpg?sqp=-…AFwAcABBg==&rs=AOn4CLBLnQRWnET3lJDA0HCKSg-w1Zku8g"
@@ -30,16 +30,26 @@
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+const router = useRouter();
+function gotoVideo() {
+  router.push({
+    name: "video",
+    path: "/video",
+  });
+}
+</script>
 
 <style lang="scss" scoped>
 .video-card-container {
   width: 340px;
-  // height: 16.988869vw;
+  height: 16.988869vw;
   margin: 0 0.468658vw 2.343292vw 0.468658vw;
   .video-card {
+    cursor: pointer;
     width: 100%;
-    // height: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     background-color: transparent;
