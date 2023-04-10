@@ -2,26 +2,21 @@
   <div class="video-card-container">
     <div class="video-card" @click="gotoVideo">
       <div class="img-box">
-        <img
-          src="https://i.ytimg.com/vi/z9eE1qzoI8M/hq720.jpg?sqp=-…AFwAcABBg==&rs=AOn4CLBLnQRWnET3lJDA0HCKSg-w1Zku8g"
-          alt="video-img"
-        />
+        <img src="@/assets/test.jpg" alt="video-img" />
       </div>
       <div class="video-intro">
         <div class="video-intro-avatar">
-          <img
-            src="https://yt3.ggpht.com/7XIC8r5g9BgRXyBdq6ajlY4BFmofaUTL_yBaV-uT3d9TA-UZPWg6GcK4pBiybX4Jh2GNK3CBGw=s68-c-k-c0x00ffffff-no-rj"
-            alt=""
-          />
+          <img src="@/assets/test_avatar.jpg" alt="" />
         </div>
         <div class="video-intro-text">
           <div class="video-intro-text-title">
             <h3>
-              【ASMR】マイクを食べる！マウスサウンドオンリー音圧強め【音フェチ】
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              Blanditiis inventore minus dolore vel. Accusan
             </h3>
           </div>
           <div class="video-intro-text-info">
-            <div>Kitsune ASMR</div>
+            <div>Kitsune</div>
             <div>觀看次數：43萬次 11 個月前</div>
           </div>
         </div>
@@ -84,6 +79,11 @@ function gotoVideo() {
       .video-intro-text {
         h3 {
           margin: 0.702988vw 0 0.234329vw 0;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          text-overflow: ellipsis;
           font-size: 0.99054482vw;
         }
         .video-intro-text-info {

@@ -1,13 +1,10 @@
 <template>
   <div class="user-video-card-container">
     <div class="img-box">
-      <img
-        src="https://i.ytimg.com/vi/z9eE1qzoI8M/hq720.jpg?sqp=-…AFwAcABBg==&rs=AOn4CLBLnQRWnET3lJDA0HCKSg-w1Zku8g"
-        alt="video-img"
-      />
+      <img src="@/assets/test.jpg" alt="video-img" />
     </div>
     <div class="user-video-card-title" ref="title">
-      【ASMR】マイクを食べる！マウスサウンドオンリー音圧強め【音フェチ】
+      マイクを食べる！マウスサウンドオンリー音圧強め【音フェチ】
     </div>
     <div class="user-video-card-info" ref="info">
       <div>觀看次數：43萬次</div>
@@ -23,7 +20,6 @@ const route = useRoute();
 const title = ref(null);
 const info = ref(null);
 onMounted(() => {
-  console.log(title);
   if (title.value && info.value) {
     if (route.path == "/user/main") {
       let titleValue = title.value as HTMLElement;
@@ -37,6 +33,7 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .user-video-card-container {
+  cursor: pointer;
   width: 20%;
   padding: 0.585823vw;
   margin-right: 0 0 0.175747vw;

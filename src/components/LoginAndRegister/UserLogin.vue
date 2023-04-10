@@ -37,6 +37,14 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import axios from "axios";
+import { useUserStore } from "@/stores/user";
+import { showLogin } from "@/stores/counter";
+import { useRouter } from "vue-router";
+import { ElMessage } from "element-plus";
+import request from "@/axios/index";
+const userStore = useUserStore();
+const router = useRouter();
+const showLoginState = showLogin();
 type loginType = {
   username: string;
   password: string;
@@ -64,13 +72,17 @@ function handleBlur(e: Event) {
 
 function loginSubmit(e: Event) {
   e.preventDefault();
-  axios
-    .post("http://localhost:3000/test", loginForm, {
-      withCredentials: true,
-    })
-    .then((res) => {
-      console.log(res);
-    });
+  request.post("/user/login", loginForm).then((res) => {
+    if (res.data.token) {
+      ElMessage.success("登录成功");
+      userStore.setUser(res.data.avatar, res.data.id, res.data.uname);
+      console.log(userStore);
+      showLoginState.isLogin = false;
+      router.push("/main");
+    } else {
+      ElMessage.error("登录失败");
+    }
+  });
 }
 </script>
 
@@ -117,6 +129,7 @@ function loginSubmit(e: Event) {
             width: 85%;
             outline: none;
             border: 0;
+            color: white;
             height: 28px;
           }
         }
@@ -145,6 +158,7 @@ function loginSubmit(e: Event) {
             background: transparent;
             width: 85%;
             outline: none;
+            color: white;
             border: 0;
             height: 28px;
           }

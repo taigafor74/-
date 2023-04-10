@@ -13,7 +13,7 @@
       </div>
       <div class="top-select-card-middle"></div>
       <div class="top-select-card-right">
-        <button v-for="item in 8">番剧</button>
+        <button v-for="item in btnArr">{{ item }}</button>
       </div>
     </div>
     <div class="video-part">
@@ -25,6 +25,7 @@
 <script setup lang="ts">
 import SideBar from "@/components/mainPage/SideBar.vue";
 import VideoCard from "@/components/mainPage/VideoCard.vue";
+const btnArr = ["游戏", "音乐", "科技", "生活", "番剧", "时尚", "娱乐", "影视"];
 </script>
 
 <style lang="scss" scoped>

@@ -227,9 +227,7 @@ const userSetting = {
   opcity: 0.5,
 };
 let src = "1680539678412";
-let testSrc = ref(
-  "http://localhost:3000/1680539678412/720p/1680539678412_720p.m3u8"
-);
+let testSrc = ref(`http://localhost:3000/${src}/720p/${src}_720p.m3u8`);
 let userDanmaku = ref("");
 const danmakuArr = reactive([
   {

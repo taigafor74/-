@@ -23,17 +23,18 @@ $dark-color: rgb(18, 18, 18);
 
 .main-container {
   display: flex;
+  font-family: "zpix";
   flex-direction: column;
   color: white;
   width: 100%;
-  background-color: $dark-color;
+  background-color: black;
   overflow-y: hidden;
   .mask {
     position: fixed;
     z-index: 99;
     width: 100%;
     height: 100%;
-    background-color: $dark-color;
+    background-color: black;
     opacity: 0.5;
   }
   .bottom {

@@ -9,13 +9,21 @@
       </div>
     </div>
     <div class="user-video-main">
-      <UserVideoCard v-for="item in 20"></UserVideoCard>
+      <UserVideoCard v-for="item in 20" @click="goto"></UserVideoCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import UserVideoCard from "@/components/UserPage/UserVideoCard.vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+function goto() {
+  router.push({
+    name: "video",
+    path: "/video",
+  });
+}
 </script>
 
 <style lang="scss" scoped>

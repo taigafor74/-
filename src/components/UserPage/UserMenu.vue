@@ -122,7 +122,6 @@ function resetCurosor() {
   userMenuLeftItem.value.forEach((item: HTMLElement) => {
     item.classList.remove("cursor-active");
   });
-  console.log(currentIndex);
 
   userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
   cursorGoto(currentIndex);

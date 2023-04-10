@@ -33,8 +33,10 @@
     <div class="main-header-right">
       <img
         @click="showLoginState.isLogin = true"
-        src="https://yt3.ggpht.com/yti/AHXOFjUpjQadqXhG1NT6K1weT1akpXcetI-mM8PFrIw=s88-c-k-c0x00ffffff-no-rj-mo"
+        src="@/assets/test_avatar.jpg"
+        alt="登录"
       />
+      <label>admin1</label>
     </div>
   </div>
 </template>
@@ -42,6 +44,7 @@
 <script setup lang="ts">
 import { showLogin } from "@/stores/counter";
 import { useRouter } from "vue-router";
+import { computed, reactive } from "vue";
 const router = useRouter();
 function gotoMainPage() {
   pushWithQuery();
@@ -143,6 +146,10 @@ const showLoginState = showLogin();
       width: 1.874634vw;
       height: 1.874634vw;
       border-radius: 50%;
+      margin-right: 10px;
+    }
+    label {
+      color: rgb(61, 2, 199);
     }
   }
 }

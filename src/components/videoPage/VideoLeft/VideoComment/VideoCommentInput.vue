@@ -2,10 +2,7 @@
   <div class="comment-input-con">
     <div class="avatar-box">
       <div class="avatar">
-        <img
-          src="https://yt3.ggpht.com/yti/AHXOFjUpjQadqXhG1NT6K1weT1akpXcetI-mM8PFrIw=s88-c-k-c0x00ffffff-no-rj-mo"
-          alt=""
-        />
+        <img src="@/assets/test_avatar.jpg" alt="" />
       </div>
     </div>
     <textarea class="input-box" placeholder="发一条评论吧"></textarea>
