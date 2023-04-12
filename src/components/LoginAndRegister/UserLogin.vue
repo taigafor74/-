@@ -42,9 +42,11 @@ import { showLogin } from "@/stores/counter";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import request from "@/axios/index";
+
 const userStore = useUserStore();
 const router = useRouter();
 const showLoginState = showLogin();
+
 type loginType = {
   username: string;
   password: string;

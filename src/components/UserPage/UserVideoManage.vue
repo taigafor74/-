@@ -5,7 +5,7 @@
         <div class="img-box">
           <img src="@/assets/icon/视频上传.png" />
         </div>
-        <div class="item-font">视频投稿</div>
+        <div class="item-font" @click="goUpload">视频投稿</div>
       </div>
       <div class="manage-card-box-item">
         <div class="img-box">
@@ -19,6 +19,11 @@
 
 <script setup lang="ts">
 import {} from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+function goUpload() {
+  router.push("/manage");
+}
 </script>
 
 <style lang="scss" scoped>

@@ -138,5 +138,5 @@ table {
 }
 @font-face {
   font-family: "zpix";
-  src: url("./font/zpix.ttf") format("truetype");
+  src: url("./zpix.ttf") format("truetype");
 }
