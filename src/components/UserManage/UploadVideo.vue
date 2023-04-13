@@ -7,7 +7,7 @@
           @click="uploadFile"
           @dragover.prevent
           @drop="handleDrop"
-          v-show="isShow"
+          v-if="isShow"
         >
           <div class="upload">
             <img src="@/assets/icon/上传.png" alt="" />
@@ -24,16 +24,15 @@
         </div>
       </Transition>
       <Transition name="scaleimg">
-        <img
-          class="ok-img"
-          src="@/assets/icon/投稿.png"
-          alt=""
-          v-show="!isShow"
-        />
+        <div class="ok-img" v-if="!isShow">
+          <img src="@/assets/icon/OK.png" alt="" />
+          <div class="btn">
+            <el-button color="#d305de" @click="uploadAgain">
+              重新上传
+            </el-button>
+          </div>
+        </div>
       </Transition>
-    </div>
-    <div class="progress">
-      <el-progress :percentage="progress" :format="format" />
     </div>
   </div>
 </template>
@@ -41,58 +40,36 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import request from "@/axios/index";
+import { useUploadStore } from "@/stores/upload";
+const uploadStore = useUploadStore();
 const isShow = ref(true);
 const fileInput = ref(null);
-const progress = ref(0);
-function processFile(file: File) {
-  const formData = new FormData();
-  formData.append("file", fileBlob);
-  console.log(formData);
-}
-watch(
-  () => progress.value,
-  (newVal) => {
-    if (newVal === 100) {
-      isShow.value = false;
-    }
-  }
-);
 async function fileChange(e: any) {
   const file = e.target.files[0];
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("title", "Example Video Title");
-  try {
-    const response = await request.post("/videos/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      onUploadProgress: (progressEvent) => {
-        progress.value = Math.round(
-          (progressEvent.loaded / progressEvent.total) * 100
-        );
-      },
-    });
-    console.log("File uploaded successfully:", response);
-  } catch (error) {
-    console.error("File upload failed:", error);
-  }
-  e.target.value = null;
+  e.target.value = "";
+  processFile(file);
 }
-
+function uploadAgain() {
+  isShow.value = true;
+  uploadStore.setUrl("");
+}
+function processFile(file) {
+  const videoUrl = URL.createObjectURL(file);
+  uploadStore.setFile(file);
+  uploadStore.setUrl(videoUrl);
+  isShow.value = false;
+}
 function uploadFile() {
   if (fileInput.value) {
     fileInput.value.click();
   }
 }
-
 function handleDrop(e: DragEvent) {
   e.preventDefault();
   const files = e.dataTransfer.files;
   if (files.length > 0) {
     const file = files[0];
-    const fileBlob = new Blob([file], { type: "video/mp4" });
-    processFile(fileBlob);
+    processFile(file);
   }
 }
 </script>
@@ -103,25 +80,36 @@ function handleDrop(e: DragEvent) {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 80%;
-  .progress {
-    width: 80%;
-  }
+  width: 50%;
   .tr-box {
     width: 100%;
-    height: 284px;
+    height: 150px;
+    display: flex;
+    align-items: center;
     position: relative;
     .ok-img {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100px;
+      height: 100px;
       position: absolute;
-      left: 50%;
+      left: -6.2px;
       top: 50%;
-      transform: translate(-50%, -50%);
-      width: 200px;
-      height: 200px;
+      transform: translateY(-50%);
+      img {
+        width: 100%;
+      }
+      .btn {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
     }
     .box {
       width: 100%;
-      height: 284px;
+      height: 180px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -147,7 +135,7 @@ function handleDrop(e: DragEvent) {
           width: 200px;
           height: 44px;
           cursor: pointer;
-          background: #00a1d6;
+          background: rgb(173, 8, 182);
           border-radius: 4px;
           text-align: center;
           line-height: 40px;
@@ -160,9 +148,9 @@ function handleDrop(e: DragEvent) {
 .bounce-enter-active {
   animation: bounce-in 1s;
 }
-.bounce-leave-active {
-  animation: bounce-in 1s reverse;
-}
+// .bounce-leave-active {
+//   animation: bounce-in 1s reverse;
+// }
 @keyframes bounce-in {
   0% {
     transform: scale(0);
@@ -175,15 +163,19 @@ function handleDrop(e: DragEvent) {
 .scaleimg-enter-active {
   animation: scaleimg-in 1s;
 }
-.scaleimg-leave-active {
-  animation: scaleimg-in 1s reverse;
-}
+
 @keyframes scaleimg-in {
   0% {
-    transform: translate(-50%, -50%) scale(0);
+    transform: translateY(-50%) scale(0);
+  }
+  50% {
+    transform: translateY(-50%) scale(1) rotate(-45deg);
+  }
+  75% {
+    transform: translateY(-50%) scale(1) rotate(45deg);
   }
   100% {
-    transform: translate(-50%, -50%) scale(1);
+    transform: translateY(-50%) scale(1) rotate(0deg);
   }
 }
 </style>

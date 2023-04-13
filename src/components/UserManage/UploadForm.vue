@@ -4,6 +4,31 @@
       <form class="form">
         <div class="same">
           <div class="sametoo">
+            <div class="left">视频</div>
+            <div class="right">
+              <UploadVideo></UploadVideo>
+              <div style="margin-bottom: 20px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="same">
+          <div class="sametoo">
+            <div class="left">封面</div>
+            <div class="right">
+              <div class="set-img">
+                <img :src="store.imgUrl" v-if="store.imgUrl" />
+                <el-button @click="store.setVisible(true)" color="#d305de">
+                  上传封面
+                </el-button>
+                <el-dialog v-model="store.visible" :show-close="true">
+                  <UploadVideoImg v-if="store.visible"></UploadVideoImg>
+                </el-dialog>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="same">
+          <div class="sametoo">
             <div class="left">标题</div>
             <div class="right">
               <el-input
@@ -101,6 +126,15 @@
 <script setup lang="ts">
 import { ref, nextTick, watch, reactive } from "vue";
 import { ElInput, ElMessage } from "element-plus";
+import UploadVideoImg from "./UploadVideoImg.vue";
+import { ElButton, ElDialog } from "element-plus";
+import { CircleCloseFilled } from "@element-plus/icons-vue";
+import { useUploadStore } from "@/stores/upload";
+import { getTime } from "@/utils/getTime";
+import request from "@/axios/index";
+import UploadVideo from "./UploadVideo.vue";
+const store = useUploadStore();
+const visible = store.visible;
 const form = reactive({
   title: "",
   area: "",
@@ -173,14 +207,41 @@ const handleInputConfirm = () => {
   inputVisible.value = false;
   inputValue.value = "";
 };
-function submit() {
-  console.log(form);
+async function submit() {
+  form.imgUrl = store.imgUrl;
+  form.time = getTime();
+  if (
+    form.area &&
+    form.desc &&
+    form.tags &&
+    form.title &&
+    form.imgUrl &&
+    store.file
+  ) {
+    try {
+      const serializedForm = JSON.stringify(form);
+      const formData = new FormData();
+      formData.append("file", store.file);
+      formData.append("form", serializedForm);
+      const response = await request.post("/videos/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      console.log("File uploaded successfully:", response);
+    } catch (error) {
+      console.error("File upload failed:", error);
+    }
+  } else {
+    ElMessage.warning("请填写完整信息");
+  }
 }
 function reset() {
   form.title = "";
   form.area = "";
   form.tags = [];
   form.desc = "";
+  store.imgUrl = "";
 }
 </script>
 
@@ -190,6 +251,7 @@ function reset() {
   border: 1px solid white;
   border-radius: 10px;
   padding: 20px;
+  min-width: 740px;
   .box {
     width: 100%;
     height: 100%;
@@ -210,6 +272,16 @@ function reset() {
           }
           .right {
             width: 80%;
+            .set-img {
+              display: flex;
+              align-items: center;
+              width: 100%;
+              img {
+                width: 480px;
+                height: 270px;
+                margin-right: 20px;
+              }
+            }
             .tag-sp {
               width: 100%;
               display: flex;
