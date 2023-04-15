@@ -1,10 +1,10 @@
 <template>
   <div class="video-container">
     <div class="video-left-container">
-      <VideoTitle></VideoTitle>
-      <VideoPlayer></VideoPlayer>
+      <VideoTitle :data="data"></VideoTitle>
+      <VideoPlayer :data="data"></VideoPlayer>
       <VideoReact></VideoReact>
-      <VideoDesc></VideoDesc>
+      <VideoDesc :data="data"></VideoDesc>
       <VideoComment></VideoComment>
       <Transition name="fade">
         <div class="fixed-input" v-if="show">
@@ -27,10 +27,19 @@ import VideoTitle from "@/components/videoPage/VideoLeft/VideoTitle.vue";
 import VideoDesc from "@/components/videoPage/VideoLeft/VideoDesc.vue";
 import VideoCommentInput from "@/components/videoPage/VideoLeft/VideoComment/VideoCommentInput.vue";
 import { useVideoStore } from "@/stores/VideoStore";
-import { computed } from "vue";
-
+import { computed, onMounted, ref } from "vue";
+import { getVideo } from "@/api/mainPage";
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
+const data = ref([]);
 const videoStore = useVideoStore();
 const show = computed(() => videoStore.isFixed);
+const getData = async () => {
+  data.value = await getVideo(route.query.vid);
+  data.value = data.value[0];
+};
+getData();
 </script>
 
 <style lang="scss" scoped>

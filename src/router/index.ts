@@ -15,6 +15,11 @@ const router = createRouter({
       component: () => import("../views/MainPage.vue"),
     },
     {
+      path: "/playlist",
+      name: "playlist",
+      component: () => import("../views/LikeLatePage.vue"),
+    },
+    {
       path: "/video",
       name: "video",
       component: () => import("../views/VideoPage.vue"),
@@ -23,6 +28,11 @@ const router = createRouter({
       path: "/manage",
       name: "manage",
       component: () => import("../views/UserManagePage.vue"),
+    },
+    {
+      path: "/v/:query",
+      name: "v",
+      component: () => import("../views/VideoPartPage.vue"),
     },
     {
       path: "/user",

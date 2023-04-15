@@ -1,5 +1,5 @@
 <template>
-  <SideBar></SideBar>
+  <!-- <SideBar></SideBar> -->
   <div class="mainpage-container">
     <div class="top-select-card">
       <div class="top-select-card-left message">
@@ -13,19 +13,47 @@
       </div>
       <div class="top-select-card-middle"></div>
       <div class="top-select-card-right">
-        <button v-for="item in btnArr">{{ item }}</button>
+        <button v-for="item in btnArr" @click="goto(item.query)">
+          {{ item.name }}
+        </button>
       </div>
     </div>
     <div class="video-part">
-      <VideoCard v-for="items in 32"></VideoCard>
+      <VideoCard v-for="item in data" :key="item.id" :item="item"></VideoCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onMounted, reactive } from "vue";
+import { getVideoList } from "@/api/mainPage";
+import { useRouter, useRoute } from "vue-router";
 import SideBar from "@/components/mainPage/SideBar.vue";
 import VideoCard from "@/components/mainPage/VideoCard.vue";
-const btnArr = ["游戏", "音乐", "科技", "生活", "番剧", "时尚", "娱乐", "影视"];
+const router = useRouter();
+const route = useRoute();
+const data = ref([]);
+onMounted(async () => {
+  data.value = await getVideoList();
+});
+const btnArr = [
+  { name: "游戏", query: "game" },
+  { name: "音乐", query: "music" },
+  { name: "科技", query: "tech" },
+  { name: "生活", query: "life" },
+  { name: "番剧", query: "animation" },
+  { name: "时尚", query: "fashion" },
+  { name: "娱乐", query: "entertainment" },
+  { name: "绘画", query: "paint" },
+];
+const goto = (query) => {
+  router.push({
+    path: `/v/${query}`,
+    query: {
+      query,
+    },
+  });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -85,9 +113,9 @@ const btnArr = ["游戏", "音乐", "科技", "生活", "番剧", "时尚", "娱
     overflow-y: auto;
     padding: 0.292912vw;
     padding-bottom: 1vw;
-    flex-wrap: wrap;
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-column-gap: 50px;
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 </style>

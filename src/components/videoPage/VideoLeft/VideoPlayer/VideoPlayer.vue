@@ -195,8 +195,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, reactive } from "vue";
+import {
+  ref,
+  onMounted,
+  onUnmounted,
+  reactive,
+  defineProps,
+  watchEffect,
+} from "vue";
 import Hls from "hls.js/dist/hls.min.js";
+import { getVideo } from "@/api/mainPage";
+import { useRoute, useRouter } from "vue-router";
 const videoPlayer = ref();
 const menuItem1 = ref();
 const menuItem2 = ref();
@@ -218,16 +227,22 @@ let showSetting = ref(false);
 let loadedFragments: any = [];
 let isDragging = ref(false);
 let hls = new Hls();
-const qualityArr = [360, 480, 720, 1080];
+const qualityArr = [360, 480, 720];
 const playRateArr = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0];
 const nowPlayRate = ref(1);
 const nowQuality = ref(720);
+const props = defineProps({
+  data: {
+    type: Object,
+    require: true,
+  },
+});
+const src = ref("");
 const userSetting = {
   isSetting: false,
   opcity: 0.5,
 };
-let src = "1680539678412";
-let testSrc = ref(`http://localhost:3000/${src}/720p/${src}_720p.m3u8`);
+
 let userDanmaku = ref("");
 const danmakuArr = reactive([
   {
@@ -305,8 +320,13 @@ const danmakuPool = {
   },
 };
 onMounted(() => {
-  setInfo(testSrc.value);
-  danmakuPool.init();
+  watchEffect(() => {
+    if (props.data && props.data.path) {
+      src.value = `http://localhost:3000/videos/${props.data.path}/720p/${props.data.path}_720p.m3u8`;
+      setInfo(src.value);
+      danmakuPool.init();
+    }
+  });
 });
 function sendDanmaku() {
   userInput.value.value = "";
@@ -450,7 +470,7 @@ function loadVideoSource(src: any, currentTime?: number) {
   });
 }
 function getVideoSrc(src: any, quality: any) {
-  return `http://localhost:3000/${src}/${quality}p/${src}_${quality}p.m3u8`;
+  return `http://localhost:3000/videos/${props.data.path}/${quality}p/${props.data.path}_${quality}p.m3u8`;
 }
 function setPlayRate(item: any) {
   videoPlayer.value.playbackRate = item;

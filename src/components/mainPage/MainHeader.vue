@@ -2,7 +2,7 @@
   <div class="main-header">
     <div class="main-header-left">
       <div class="select-box">
-        <img src="@/assets/icon/侧边栏.png" alt="" />
+        <img src="@/assets/icon/侧边栏.png" alt="" @click="toggleSideBar" />
       </div>
       <div class="img-box" @click="gotoMainPage">
         <svg
@@ -45,6 +45,12 @@
 import { showLogin } from "@/stores/counter";
 import { useRouter } from "vue-router";
 import { computed, reactive } from "vue";
+import { useMainStore } from "@/stores/main";
+const store = useMainStore();
+const toggleSideBar = () => {
+  store.isSideBar = !store.isSideBar;
+  console.log(store.isSideBar);
+};
 const router = useRouter();
 function gotoMainPage() {
   pushWithQuery();
@@ -81,6 +87,7 @@ const showLoginState = showLogin();
       img {
         width: 1.405975vw;
         height: 1.405975vw;
+        cursor: pointer;
       }
     }
     .img-box {

@@ -1,7 +1,7 @@
 <template>
   <div class="video-title-con">
     <h1 class="title">
-      Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+      {{ data.title }}
     </h1>
     <div class="data-list">
       <span class="item">
@@ -14,14 +14,26 @@
       </span>
       <span class="item">
         <img src="@/assets/icon/下载.svg" alt="" />
-        2023-04-02 13:40:35
+        {{ data.upload_date }}
       </span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { defineProps, watchEffect, onMounted, ref } from "vue";
+const data = ref([]);
+const props = defineProps({
+  data: {
+    type: Object,
+    require: true,
+  },
+});
+onMounted(() => {
+  watchEffect(() => {
+    data.value = props.data;
+  });
+});
 </script>
 
 <style lang="scss" scoped>

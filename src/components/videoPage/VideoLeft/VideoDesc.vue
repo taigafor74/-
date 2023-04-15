@@ -2,13 +2,7 @@
   <div class="desc-con">
     <div class="info">
       <div class="info-2">
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cumque
-        veritatis fugit rerum tempore molestiae blanditiis, saepe est quis quas
-        deserunt reprehenderit at nulla eaque voluptatibus officiis velit esse
-        repellendus laudantium. Lorem ipsum dolor sit amet, consectetur
-        adipisicing elit. Cumque veritatis fugit rerum tempore molestiae
-        blanditiis, saepe est quis quas deserunt reprehenderit at nulla eaque
-        voluptatibus officiis velit esse repellendus laudantium.
+        {{ data.description }}
       </div>
     </div>
     <div class="tag">
@@ -17,7 +11,7 @@
         ref="tagList"
         :style="{ height: show ? '100%' : '36px' }"
       >
-        <li v-for="item in 30">动漫资讯</li>
+        <li v-for="item in data.tags">{{ item }}</li>
       </ul>
       <div
         class="arrow"
@@ -44,7 +38,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { defineProps, watchEffect, onMounted, ref } from "vue";
+const data = ref([]);
+const props = defineProps({
+  data: {
+    type: Object,
+    require: true,
+  },
+});
+onMounted(() => {
+  watchEffect(() => {
+    if (props.data.tags) {
+      data.value = props.data;
+      const inputString = data.value.tags;
+      const cleanStr = inputString.slice(1, -1);
+      const stringArray = cleanStr.split(",");
+      data.value.upload_date = new Date(
+        data.value.upload_date
+      ).toLocaleString();
+
+      data.value.tags = stringArray;
+    }
+  });
+});
 const arrow: any = ref(null);
 const show = ref(false);
 const tagList: any = ref(null);

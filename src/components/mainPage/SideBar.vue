@@ -85,7 +85,7 @@
         </div>
         <div class="sidebar-list-item-intro">你的影片</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="goto(true)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -110,7 +110,7 @@
         </div>
         <div class="sidebar-list-item-intro">稍后观看</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="goto(true)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -399,18 +399,23 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 const router = useRouter();
-function goto() {
-  console.log(1);
-
-  router.push("/user/main");
+function goto(path) {
+  if (path == true) {
+    router.push("/playlist");
+  } else {
+    router.push("/user/main");
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .sidebar-container {
   position: fixed;
-  width: 14.059754vw;
+  overflow-x: hidden;
+  width: 240px;
+  background: #000;
   height: calc(100vh - 3.280609vw);
+  z-index: 99;
   overflow-y: auto;
   &::-webkit-scrollbar {
     width: 0;
