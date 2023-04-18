@@ -256,7 +256,7 @@ function registerSubmit(e) {
 <style lang="scss" scoped>
 .login-box {
   width: 600px;
-  background-color: rgb(0, 0, 0);
+  background-color: #0f0f0f;
   color: white;
   .login-form {
     width: 100%;

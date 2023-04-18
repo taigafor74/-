@@ -13,7 +13,7 @@
       </Transition>
     </div>
     <div class="video-right-container">
-      <VideoRight></VideoRight>
+      <VideoRight :data="data"></VideoRight>
     </div>
   </div>
 </template>
@@ -48,7 +48,7 @@ getData();
   padding: 0 0.585823vw;
   display: flex;
   justify-content: center;
-  background-color: black;
+  background-color: #0f0f0f;
   .video-left-container {
     position: relative;
     width: 1063px;

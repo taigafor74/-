@@ -32,7 +32,7 @@ function goUpload() {
   margin-bottom: 0.585823vw;
   border: 0.05852vw solid rgb(61, 2, 199);
   border-radius: 0.492912vw;
-  background: #000;
+  background: #0f0f0f;
   .manage-card-box {
     width: 100%;
     display: flex;
@@ -40,7 +40,7 @@ function goUpload() {
     align-items: center;
     .manage-card-box-item {
       flex: 1;
-      background-color: #000000;
+      background-color: #0f0f0f;
       display: flex;
       align-items: center;
       justify-content: center;

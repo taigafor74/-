@@ -6,7 +6,7 @@
         <LeftBar></LeftBar>
       </div>
       <div class="right">
-        <VideoItem v-for="item in 30"></VideoItem>
+        <VideoCard v-for="item in 32"></VideoCard>
       </div>
     </div>
   </div>
@@ -22,7 +22,7 @@ import VideoItem from "@/components/VideoList/VideoItem.vue";
 <style lang="scss" scoped>
 .main-con-like {
   width: 100%;
-  background-color: black;
+  background-color: #0f0f0f;
   .main-content {
     width: 100%;
     display: flex;

@@ -30,14 +30,14 @@ function goto() {
 .user-video-container {
   width: 100%;
   padding: 1.171646vw;
-  background-color: #000000;
+  background-color: #0f0f0f;
   border: 0.058582vw solid rgb(61, 2, 199);
   border-radius: 0.492912vw;
   .user-video-head {
     width: 100%;
     height: 1.640305vw;
     padding-left: 0.585823vw;
-    background-color: #000000;
+    background-color: #0f0f0f;
     display: flex;
     align-items: center;
     p {

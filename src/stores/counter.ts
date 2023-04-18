@@ -11,5 +11,6 @@ export const useCounterStore = defineStore("counter", () => {
 });
 export const showLogin = defineStore("ShowTag", () => {
   let isLogin = ref(false);
-  return { isLogin };
+  let showSelectBox = ref(false);
+  return { isLogin, showSelectBox };
 });

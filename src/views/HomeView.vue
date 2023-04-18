@@ -33,7 +33,7 @@ const showLoginState = showLogin();
   flex-direction: column;
   color: white;
   width: 100%;
-  background-color: black;
+  background-color: #0f0f0f;
   overflow-y: hidden;
   .mask {
     position: fixed;

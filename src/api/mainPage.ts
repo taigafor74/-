@@ -1,8 +1,16 @@
 import request from "@/axios/index.js";
-export function getVideoList() {
-  return request.get("/videos/getAllVideos").then((res) => {
-    return res.data.data;
-  });
+
+export function getVideoList(page = 1, limit = 20) {
+  return request
+    .get("/videos/getAllVideos", {
+      params: {
+        page,
+        limit,
+      },
+    })
+    .then((res) => {
+      return res.data.data;
+    });
 }
 export function getVideo(id) {
   return request.get(`/videos/getVideo/${id}`).then((res) => {

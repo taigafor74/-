@@ -31,25 +31,32 @@
       </div>
     </div>
     <div class="main-header-right">
-      <img
-        @click="showLoginState.isLogin = true"
-        src="@/assets/test_avatar.jpg"
-        alt="登录"
-      />
-      <label>admin1</label>
+      <div class="user-select" :class="{ ss: showLoginState.showSelectBox }">
+        <el-avatar
+          size=""
+          :src="userStore.avatar"
+          @click="userMove"
+          @mouseover="showSelectBoxOnHover"
+        />
+        <SelectBox v-if="showLoginState.showSelectBox"></SelectBox>
+      </div>
+      <label>{{ userStore.uname }}</label>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { showLogin } from "@/stores/counter";
+import SelectBox from "./SelectBox.vue";
 import { useRouter } from "vue-router";
-import { computed, reactive } from "vue";
+import { computed, reactive, toRefs, ref, watchEffect } from "vue";
 import { useMainStore } from "@/stores/main";
+import { useUserStore } from "@/stores/user";
+import { showLogin } from "@/stores/counter";
+const showLoginState = showLogin();
+const userStore = useUserStore();
 const store = useMainStore();
 const toggleSideBar = () => {
   store.isSideBar = !store.isSideBar;
-  console.log(store.isSideBar);
 };
 const router = useRouter();
 function gotoMainPage() {
@@ -61,21 +68,36 @@ function pushWithQuery() {
     path: "/main",
   });
 }
-const showLoginState = showLogin();
+const userMove = () => {
+  if (userStore.isLoggedIn && userStore.id) {
+    return;
+  } else {
+    showLoginState.isLogin = true;
+  }
+};
+
+function showSelectBoxOnHover() {
+  if (userStore.isLoggedIn && userStore.id) {
+    showLoginState.showSelectBox = true;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+.ss {
+  transform: translateX(-80px) translateY(30px) scale(2);
+}
 .main-header {
   position: fixed;
   z-index: 98;
-  height: 3.280609vw;
+  height: 56px;
   width: 100%;
-  padding: 0 0.937317vw;
+  padding: 0 16px;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: black;
+  background-color: #0f0f0f;
   .main-header-left {
     width: 20%;
     height: 100%;
@@ -149,14 +171,21 @@ const showLoginState = showLogin();
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    img {
-      width: 1.874634vw;
-      height: 1.874634vw;
-      border-radius: 50%;
-      margin-right: 10px;
-    }
     label {
+      margin-left: 10px;
       color: rgb(61, 2, 199);
+    }
+    .user-select {
+      transition: all 0.5s;
+      position: relative;
+      span {
+        position: relative;
+        z-index: 99;
+        cursor: pointer;
+      }
+      .select-box {
+        position: absolute;
+      }
     }
   }
 }

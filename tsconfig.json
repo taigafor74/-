@@ -3,6 +3,7 @@
   "include": ["env.d.ts", "src/**/*", "src/**/*.vue"],
   "compilerOptions": {
     "verbatimModuleSyntax": true,
+    "noUnusedLocals": false,
     "ignoreDeprecations": "5.0",
     "types": ["node", "element-plus/global"],
     "baseUrl": ".",

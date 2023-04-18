@@ -403,7 +403,9 @@ function goto(path) {
   if (path == true) {
     router.push("/playlist");
   } else {
-    router.push("/user/main");
+    router.push({
+      path: `/user/${1}/main`,
+    });
   }
 }
 </script>
@@ -413,7 +415,7 @@ function goto(path) {
   position: fixed;
   overflow-x: hidden;
   width: 240px;
-  background: #000;
+  background: #0f0f0f;
   height: calc(100vh - 3.280609vw);
   z-index: 99;
   overflow-y: auto;
@@ -428,7 +430,7 @@ function goto(path) {
     border-bottom: 0.058582vw solid rgb(75, 75, 75);
     padding: 0.702988vw;
     width: calc((14.059754vw) - 0.585823vw);
-    background-color: #000000;
+    background-color: #0f0f0f;
     margin-bottom: 10px;
     label {
       padding-left: 12px;
@@ -440,7 +442,7 @@ function goto(path) {
       align-items: center;
       width: 100%;
       height: 2.443292vw;
-      background-color: #000000;
+      background-color: #0f0f0f;
       margin-bottom: 5px;
       padding: 0.702988vw;
       border-radius: 0.615823vw;

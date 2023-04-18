@@ -4,7 +4,7 @@
       <div
         class="user-menu-left-item"
         @mouseenter="test($event, item.index)"
-        @click="routerto(item.index, item.routerPath)"
+        @click="routerto(item.index, item.routerPath, userId)"
         @mouseleave="resetCurosor"
         v-for="item in userMenuArr"
         :key="item.index"
@@ -20,11 +20,11 @@
       <img src="@/assets/icon/搜索.png" alt="" />
     </div>
     <div class="user-menu-right">
-      <div class="user-menu-data">
+      <div class="user-menu-data spc" @click="goFollow">
         <span>关注数</span>
         <span>369</span>
       </div>
-      <div class="user-menu-data">
+      <div class="user-menu-data spc" @click="goFans">
         <span>粉丝数</span>
         <span>8889</span>
       </div>
@@ -58,12 +58,25 @@ enum enumIndex {
 }
 const router = useRouter();
 const route = useRoute();
+const userId = route.params.id;
 const cursor = ref<HTMLElement | any>(null);
 let currentIndex: any = enumIndex[route.path as any];
 let userMenuLeftItem = ref<HTMLElement | any>(null);
+const goFollow = () => {
+  router.push({
+    path: `/user/${route.params.id}/follow/follow`,
+  });
+};
+const goFans = () => {
+  router.push({
+    path: `/user/${route.params.id}/follow/fans`,
+  });
+};
 onMounted(() => {
   cursorGoto(currentIndex);
-  userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
+  if (userMenuLeftItem.value && userMenuLeftItem.value[currentIndex]) {
+    userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
+  }
 });
 const userMenuArr: userMenu[] = reactive([
   {
@@ -98,10 +111,11 @@ const userMenuArr: userMenu[] = reactive([
   },
 ]);
 
-function routerto(index: number, routerPath: string) {
+function routerto(index: number, routerPath: string, id: string) {
   currentIndex = index;
   router.push({
     name: routerPath,
+    params: { id },
     query: {},
   });
 }
@@ -123,7 +137,9 @@ function resetCurosor() {
     item.classList.remove("cursor-active");
   });
 
-  userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
+  if (userMenuLeftItem.value && userMenuLeftItem.value[currentIndex]) {
+    userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
+  }
   cursorGoto(currentIndex);
 }
 </script>
@@ -133,7 +149,7 @@ function resetCurosor() {
   width: 100%;
   height: 3.866432vw;
   padding: 0 1.171646vw;
-  background-color: rgb(0, 0, 0);
+  background-color: #0f0f0f;
   border: 0.058582vw solid rgb(61, 2, 199);
   border-top: 0;
   border-bottom-left-radius: 0.492912vw;
@@ -215,6 +231,14 @@ function resetCurosor() {
   }
   .cursor-active {
     color: rgb(61, 2, 199);
+  }
+}
+.spc {
+  cursor: pointer;
+  &:hover {
+    span {
+      color: rgb(61, 2, 199) !important;
+    }
   }
 }
 </style>

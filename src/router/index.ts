@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../views/HomeView.vue";
-
+import { useUserStore } from "@/stores/user";
+import { checkToken } from "@/api/checkToken";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -35,8 +36,7 @@ const router = createRouter({
       component: () => import("../views/VideoPartPage.vue"),
     },
     {
-      path: "/user",
-      name: "user",
+      path: "/user/:id",
       component: () => import("../views/UserPage/UserPage.vue"),
       children: [
         {
@@ -49,7 +49,36 @@ const router = createRouter({
           name: "userMain",
           component: () => import("../views/UserPage/UserMainPage.vue"),
         },
+        {
+          path: "follow",
+          component: () => import("../views/UserPage/UserFollowPage.vue"),
+          children: [
+            {
+              path: "follow",
+              name: "follow",
+              component: () => import("../components/UserPage/UserFollow.vue"),
+            },
+            {
+              path: "fans",
+              name: "fans",
+              component: () => import("../components/UserPage/UserFans.vue"),
+            },
+            {
+              path: "",
+              redirect: "NotFound", // 重定向到 /user/main
+            },
+          ],
+        },
+        {
+          path: "", // 当用户访问 /user 时
+          redirect: "/user/main", // 重定向到 /user/main
+        },
       ],
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: () => import("../views/NotFound.vue"),
     },
     // {
     //   path: '/about',
@@ -61,5 +90,19 @@ const router = createRouter({
     // }
   ],
 });
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore();
+  // 如果用户已登录，检查 token 是否有效
+  if (userStore.isLoggedIn) {
+    const tokenValid = await checkToken();
 
+    // 如果 token 无效，则执行注销操作
+    if (!tokenValid) {
+      userStore.logout();
+    }
+  }
+
+  // 继续导航
+  next();
+});
 export default router;

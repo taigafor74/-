@@ -42,11 +42,10 @@ import { showLogin } from "@/stores/counter";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import request from "@/axios/index";
-
+import { login } from "@/api/loginAndR";
 const userStore = useUserStore();
 const router = useRouter();
 const showLoginState = showLogin();
-
 type loginType = {
   username: string;
   password: string;
@@ -72,19 +71,28 @@ function handleBlur(e: Event) {
   }
 }
 
-function loginSubmit(e: Event) {
+async function loginSubmit(e: Event) {
   e.preventDefault();
-  request.post("/user/login", loginForm).then((res) => {
-    if (res.data.token) {
-      ElMessage.success("登录成功");
-      userStore.setUser(res.data.avatar, res.data.id, res.data.uname);
-      console.log(userStore);
-      showLoginState.isLogin = false;
-      router.push("/main");
-    } else {
-      ElMessage.error("登录失败");
-    }
-  });
+  const res = await login(loginForm);
+  console.log(res);
+
+  if (res.success) {
+    ElMessage.success("登录成功");
+    userStore.setUser(res.avatar, res.id, res.uname, true);
+    // 将用户名和头像等信息存储到 localStorage 中
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: res.id,
+        uname: res.uname,
+        avatar: res.avatar,
+      })
+    );
+    showLoginState.isLogin = false;
+    router.push("/main");
+  } else {
+    ElMessage.error("登录失败");
+  }
 }
 </script>
 
@@ -92,7 +100,7 @@ function loginSubmit(e: Event) {
 .login-box {
   width: 600px;
   height: 240px;
-  background-color: rgb(0, 0, 0);
+  background-color: #0f0f0f;
   color: white;
   .login-form {
     width: 100%;

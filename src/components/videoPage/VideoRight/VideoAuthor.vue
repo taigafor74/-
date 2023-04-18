@@ -2,15 +2,15 @@
   <div class="Author-con">
     <div class="info">
       <div class="avatar">
-        <img src="@/assets/test_avatar.jpg" alt="" />
+        <img :src="img" alt="" />
       </div>
       <div class="right">
         <div class="name">
-          <span class="r-name">小猪佩奇</span>
+          <span class="r-name">{{ uname }}</span>
           <span class="r-mail">发消息</span>
         </div>
         <div class="intro">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
+          {{ desc }}
         </div>
         <div class="btn">
           <span>
@@ -28,7 +28,7 @@
                 fill="white"
               ></path>
             </svg>
-            关注 28.4万
+            关注 {{ subscribe }}
           </span>
         </div>
       </div>
@@ -37,7 +37,33 @@
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { defineProps, watchEffect, onMounted, ref } from "vue";
+const data = ref([]);
+const props = defineProps({
+  data: {
+    type: Object,
+    require: true,
+  },
+});
+const subscribe = ref(0);
+const img = ref(
+  "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+);
+const uname = ref("暂无昵称");
+const desc = ref("暂无简介");
+onMounted(() => {
+  watchEffect(() => {
+    if (props.data) {
+      uname.value = props.data.uname;
+      if (props.data.desc) {
+        desc.value = props.data.desc;
+      }
+      if (props.data.avatar) {
+        img.value = `http://localhost:3000/avatar/${props.data.avatar}`;
+      }
+    }
+  });
+});
 </script>
 
 <style lang="scss" scoped>

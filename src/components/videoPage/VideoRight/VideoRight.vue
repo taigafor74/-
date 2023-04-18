@@ -1,7 +1,7 @@
 <template>
   <div class="video-right-con">
     <div class="video-item-container">
-      <VideoAuthor></VideoAuthor>
+      <VideoAuthor :data="props.data"></VideoAuthor>
       <VideoDanmaku></VideoDanmaku>
       <VideoItem v-for="item in 30"></VideoItem>
     </div>
@@ -12,6 +12,21 @@
 import VideoItem from "./VideoItem.vue";
 import VideoDanmaku from "./VideoDanmaku.vue";
 import VideoAuthor from "./VideoAuthor.vue";
+import { defineProps, watchEffect, onMounted, ref } from "vue";
+const data = ref([]);
+const props = defineProps({
+  data: {
+    type: Object,
+    require: true,
+  },
+});
+onMounted(() => {
+  watchEffect(() => {
+    if (props.data) {
+      return;
+    }
+  });
+});
 </script>
 
 <style lang="scss" scoped>

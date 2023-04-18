@@ -10,11 +10,11 @@
         </div>
         <div class="video-intro-text">
           <div class="video-intro-text-title">
-            <h3>{{ item.title }}</h3>
+            <h3>{{ title }}</h3>
           </div>
           <div class="video-intro-text-info">
             <div>Kitsune</div>
-            <div>觀看次數：43萬次 11 個月前</div>
+            <div>觀看次數：{{ playCount }} {{ time }}</div>
           </div>
         </div>
       </div>
@@ -24,8 +24,14 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-import { defineProps, onMounted, ref } from "vue";
+import { defineProps, onMounted, ref, watchEffect, computed } from "vue";
+import { useMainStore } from "@/stores/main";
+import { timeAgo } from "@/utils/getTime";
+const mainStore = useMainStore();
 const imgPath = ref("");
+const title = ref("");
+const time = ref("");
+const playCount = ref("0");
 const props = defineProps({
   item: {
     type: Object,
@@ -33,9 +39,22 @@ const props = defineProps({
   },
 });
 onMounted(() => {
-  imgPath.value = `http://localhost:3000/videoImg/${props.item.img}`;
-  console.log(imgPath.value);
+  watchEffect(() => {
+    if (props.item.title && props.item.img) {
+      title.value = props.item.title;
+      imgPath.value = `http://localhost:3000/videoImg/${props.item.img}`;
+      time.value = timeAgo(props.item.upload_date);
+      playCount.value = formatPlayCount(props.item.playcount);
+    }
+  });
 });
+function formatPlayCount(playCount) {
+  if (playCount < 10000) {
+    return `${playCount}次`;
+  } else if (playCount >= 10000 && playCount < 1000000) {
+    return `${(playCount / 10000).toFixed(1)}万次`;
+  }
+}
 
 const router = useRouter();
 function gotoVideo(path) {
@@ -52,8 +71,8 @@ function gotoVideo(path) {
 <style lang="scss" scoped>
 .video-card-container {
   width: 340px;
-  height: 16.988869vw;
-  margin: 0 0.468658vw 2.343292vw 0.468658vw;
+  height: 290px;
+  margin: 0 0.468658vw 10px 0.468658vw;
   .video-card {
     cursor: pointer;
     width: 100%;

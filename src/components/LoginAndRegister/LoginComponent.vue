@@ -38,7 +38,7 @@ function changeAct(e) {
 .login-container {
   font-family: "zpix";
   overflow: hidden;
-  background-color: rgb(0, 0, 0);
+  background-color: #0f0f0f;
   border-radius: 20px;
   position: fixed;
   z-index: 999;

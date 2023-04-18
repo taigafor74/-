@@ -2,10 +2,10 @@
   <div class="user-header-container">
     <div class="user-header">
       <div class="user-header-avatar">
-        <img src="@/assets/test_avatar.jpg" alt="" />
+        <img :src="imgUrl" alt="" />
       </div>
       <div class="user-header-info">
-        <div class="user-header-info-name">电锯锯木头</div>
+        <div class="user-header-info-name">{{ uname }}</div>
         <div class="user-header-info-introduction">
           <input placeholder="编辑个性签名" maxlength="60" />
         </div>
@@ -15,13 +15,29 @@
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { ref, watchEffect } from "vue";
+const props = defineProps({
+  userInfo: Object,
+});
+const uname = ref("???");
+const imgUrl = ref(
+  "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+);
+watchEffect(() => {
+  if (props.userInfo) {
+    uname.value = props.userInfo.uname;
+    if (props.userInfo.avatar) {
+      imgUrl.value = `http://localhost:3000/avatar/${props.userInfo.avatar}`;
+    }
+  }
+});
 </script>
 
 <style lang="scss" scoped>
 .user-header-container {
-  border: 0.058582vw solid rgb(61, 2, 199);
-  border-top: 0;
+  border: 1px solid rgb(61, 2, 199);
+  margin-top: 5px;
+  border-radius: 5px;
   border-bottom: 0;
   width: 100%;
   background-image: url("@/assets/background/userbg.jpg");

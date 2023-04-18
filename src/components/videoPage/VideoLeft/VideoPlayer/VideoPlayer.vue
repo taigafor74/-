@@ -633,6 +633,7 @@ onUnmounted(() => {
     position: relative;
     video {
       width: 100%;
+      height: 600px;
     }
     .danmaku {
       visibility: visible;

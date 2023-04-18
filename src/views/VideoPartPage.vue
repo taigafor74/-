@@ -27,7 +27,7 @@
       </el-carousel>
     </div>
     <div class="video-part">
-      <VideoCard v-for="items in 32"></VideoCard>
+      <VideoCard v-for="item in data" :key="item.id" :item="item"></VideoCard>
     </div>
   </div>
 </template>
@@ -40,7 +40,11 @@ const router = useRouter();
 const route = useRoute();
 const name = ref("");
 name.value = btnName[route.query.query];
-
+import { getVideoList } from "@/api/mainPage";
+const data = ref([]);
+onMounted(async () => {
+  data.value = await getVideoList();
+});
 enum btnName {
   game = "游戏",
   music = "音乐",
@@ -106,7 +110,7 @@ const updateName = (query) => {
     padding: 0.820152vw 0.76397vw;
     font-size: 0.820152vw;
     position: fixed;
-    background: black;
+    background: #0f0f0f;
     .top-select-card-left {
       cursor: pointer;
       display: flex;
@@ -133,7 +137,7 @@ const updateName = (query) => {
       align-items: center;
       button {
         color: white;
-        background: black;
+        background: #0f0f0f;
         width: 4.171646vw;
         text-align: center;
         border: 0.058582vw solid white;
