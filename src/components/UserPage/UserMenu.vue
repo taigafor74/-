@@ -22,11 +22,11 @@
     <div class="user-menu-right">
       <div class="user-menu-data spc" @click="goFollow">
         <span>关注数</span>
-        <span>369</span>
+        <span>{{ follow }}</span>
       </div>
       <div class="user-menu-data spc" @click="goFans">
         <span>粉丝数</span>
-        <span>8889</span>
+        <span>{{ fans }}</span>
       </div>
       <div class="user-menu-data">
         <span>获赞数</span>
@@ -41,8 +41,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { getFans, getFollows } from "@/api/follow";
 type userMenu = {
   title: string;
   iconSrc: any;
@@ -56,12 +57,28 @@ enum enumIndex {
   collect = 3,
   setting = 4,
 }
+const follow = ref(0);
+const fans = ref(0);
 const router = useRouter();
 const route = useRoute();
 const userId = route.params.id;
 const cursor = ref<HTMLElement | any>(null);
 let currentIndex: any = enumIndex[route.path as any];
 let userMenuLeftItem = ref<HTMLElement | any>(null);
+async function getData() {
+  const fansRes = await getFans(route.params.id);
+  const followRes = await getFollows(route.params.id);
+  follow.value = followRes.length;
+  fans.value = fansRes.length;
+}
+getData();
+
+watch(
+  () => route.params.id,
+  async () => {
+    await getData();
+  }
+);
 const goFollow = () => {
   router.push({
     path: `/user/${route.params.id}/follow/follow`,

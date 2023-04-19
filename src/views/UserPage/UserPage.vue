@@ -11,15 +11,24 @@ import UserHeader from "@/components/UserPage/UserHeader.vue";
 import UserMenu from "@/components/UserPage/UserMenu.vue";
 import { getUserInfo } from "@/api/user";
 import { useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 
 const route = useRoute();
 const userInfo = ref({});
-
-onMounted(async () => {
+const fetchUserInfo = async () => {
   const data = await getUserInfo(route.params.id);
   userInfo.value = data;
-  console.log(data);
+};
+
+watch(
+  () => route.params.id,
+  async () => {
+    await fetchUserInfo();
+  }
+);
+
+onMounted(async () => {
+  await fetchUserInfo();
 });
 </script>
 

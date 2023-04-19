@@ -4,12 +4,12 @@
       <div class="layer" :style="backgroundStyle">
         <div class="img-float">
           <div class="img-box">
-            <img src="@/assets/test.jpg" />
+            <img :src="imgPath" />
           </div>
         </div>
       </div>
       <div class="bottom">
-        <img src="@/assets/test.jpg" />
+        <img :src="imgPath" />
         <div class="title">喜欢的影片</div>
         <div class="info">
           <div class="wrap">
@@ -38,13 +38,37 @@
 import { CaretRight } from "@element-plus/icons-vue";
 import ColorThief from "colorthief";
 import { ref, onMounted, computed } from "vue";
-const imageSrc = new URL("@/assets/test.jpg", import.meta.url).href;
-const colors = ref({});
-onMounted(async () => {
-  const result = await getColorsFromImage(imageSrc);
-  colors.value = result;
-  console.log(colors.value);
+import { useRouter } from "vue-router";
+import { defineProps, watchEffect } from "vue";
+import { useMainStore } from "@/stores/main";
+import { timeAgo } from "@/utils/getTime";
+const mainStore = useMainStore();
+const imgPath = ref("");
+const props = defineProps({
+  item: {
+    type: Object,
+    required: true,
+  },
 });
+// const imageSrc = new URL("@/assets/test.jpg", import.meta.url).href;
+const colors = ref({});
+// onMounted(async () => {
+//   watchEffect(() => {
+//     if (props.item.length > 0) {
+//       const item = props.item[0];
+//       imgPath.value = `http://localhost:3000/videoImg/${item.img}`;
+//     }
+//   });
+// });
+watchEffect(async () => {
+  if (props.item.length > 0) {
+    const item = props.item[0];
+    imgPath.value = `http://localhost:3000/videoImg/${item.img}`;
+    const result = await getColorsFromImage(imgPath.value);
+    colors.value = result;
+  }
+});
+
 const backgroundStyle = computed(() => {
   if (colors.value.vibrantColor && colors.value.mutedColor) {
     const vibrantColor = `rgba(${colors.value.brightestColor.join(",")}, 0.8)`;
@@ -71,7 +95,7 @@ async function getColorsFromImage(imageSrc) {
   const colorThief = new ColorThief();
   const image = new Image();
   image.crossOrigin = "Anonymous";
-  image.src = imageSrc;
+  image.src = imgPath.value;
   return new Promise((resolve) => {
     image.onload = () => {
       const vibrantColor = colorThief.getColor(image);

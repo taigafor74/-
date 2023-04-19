@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import axios from "axios";
 import { useUserStore } from "@/stores/user";
 import { showLogin } from "@/stores/counter";
@@ -43,6 +43,7 @@ import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import request from "@/axios/index";
 import { login } from "@/api/loginAndR";
+import { getFollows } from "@/api/follow";
 const userStore = useUserStore();
 const router = useRouter();
 const showLoginState = showLogin();
@@ -54,7 +55,8 @@ const loginForm: loginType = reactive({
   username: "",
   password: "",
 });
-
+const follow = ref([]);
+const followId = ref([]);
 function handleFocus(e: Event) {
   const inputParent = (e.currentTarget as HTMLElement).parentElement;
   if (inputParent) {
@@ -70,15 +72,22 @@ function handleBlur(e: Event) {
     inputParent.style.boxShadow = "0 0 0 transparent";
   }
 }
-
+async function getFollowId(arr) {
+  if (arr) {
+    arr.forEach((item) => {
+      followId.value.push(item.followed_id);
+    });
+  }
+  return;
+}
 async function loginSubmit(e: Event) {
   e.preventDefault();
   const res = await login(loginForm);
-  console.log(res);
-
   if (res.success) {
     ElMessage.success("登录成功");
-    userStore.setUser(res.avatar, res.id, res.uname, true);
+    follow.value = await getFollows(res.id);
+    await getFollowId(follow.value);
+    userStore.setUser(res.avatar, res.id, res.uname, true, followId.value);
     // 将用户名和头像等信息存储到 localStorage 中
     localStorage.setItem(
       "user",
@@ -86,6 +95,7 @@ async function loginSubmit(e: Event) {
         id: res.id,
         uname: res.uname,
         avatar: res.avatar,
+        followArr: followId.value,
       })
     );
     showLoginState.isLogin = false;

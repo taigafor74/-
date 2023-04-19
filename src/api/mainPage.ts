@@ -17,3 +17,7 @@ export function getVideo(id) {
     return res.data.data;
   });
 }
+export async function getVideos() {
+  const res = await request.get("/videos/AllVideos");
+  return res.data;
+}

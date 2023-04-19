@@ -8,17 +8,17 @@
       popper-style="background:transparent;padding:0"
     >
       <template #reference>
-        <div class="left">
+        <div class="left" @click="gotoSpace">
           <div class="avatar-box">
-            <img src="@/assets/test_avatar.jpg" />
+            <img :src="avatar" />
           </div>
           <div class="info">
-            <div class="name">电锯锯木头</div>
-            <div class="desc">hahahah</div>
+            <div class="name">{{ uname }}</div>
+            <div class="desc">{{ desc }}</div>
           </div>
         </div>
       </template>
-      <UserIntroCard />
+      <UserIntroCard :data="data" />
     </el-popover>
     <div class="btn">
       <el-button>已关注</el-button>
@@ -27,9 +27,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, defineProps, watchEffect, reactive } from "vue";
 import UserIntroCard from "./UserIntroCard.vue";
+import { getFans, getFollows } from "@/api/follow";
+import { useRouter } from "vue-router";
+const router = useRouter();
 const visible = ref(false);
+const uname = ref("test-00");
+const desc = ref("暂无简介");
+const avatar = ref(
+  "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+);
+const props = defineProps({
+  item: {
+    type: Object,
+    required: true,
+  },
+});
+const data = reactive({
+  uname: "test-00",
+  desc: "暂无简介",
+  avatar: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
+  follows: 0,
+  fans: 0,
+  id: 0,
+});
+watchEffect(async () => {
+  if (props.item.uname) {
+    uname.value = props.item.uname;
+    desc.value = props.item.desc;
+    avatar.value = `http://localhost:3000/avatar/${props.item.avatar}`;
+    data.uname = props.item.uname;
+    data.desc = props.item.desc;
+    data.id = props.item.id;
+    data.avatar = `http://localhost:3000/avatar/${props.item.avatar}`;
+    await getData(props.item.id);
+  }
+});
+async function getData(uid) {
+  const fansRes = await getFans(uid);
+  const followRes = await getFollows(uid);
+  data.follows = followRes.length;
+  data.fans = fansRes.length;
+}
+async function gotoSpace() {
+  if (data.id) {
+    await router.push(`/user/${data.id}/main`);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

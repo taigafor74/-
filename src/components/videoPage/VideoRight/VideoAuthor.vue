@@ -1,7 +1,7 @@
 <template>
   <div class="Author-con">
     <div class="info">
-      <div class="avatar">
+      <div class="avatar" @click="gotoSpace">
         <img :src="img" alt="" />
       </div>
       <div class="right">
@@ -12,7 +12,7 @@
         <div class="intro">
           {{ desc }}
         </div>
-        <div class="btn">
+        <div class="btn" @click="submitFollow">
           <span>
             <svg
               width="16"
@@ -28,7 +28,7 @@
                 fill="white"
               ></path>
             </svg>
-            关注 {{ subscribe }}
+            {{ is_follow }} {{ subscribe }}
           </span>
         </div>
       </div>
@@ -37,8 +37,15 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, watchEffect, onMounted, ref } from "vue";
+import { defineProps, watchEffect, onMounted, ref, computed } from "vue";
+import { getFans } from "@/api/follow";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { ElMessage } from "element-plus";
+const store = useUserStore();
+const router = useRouter();
 const data = ref([]);
+const isFollow = ref(false);
 const props = defineProps({
   data: {
     type: Object,
@@ -46,24 +53,55 @@ const props = defineProps({
   },
 });
 const subscribe = ref(0);
+const is_follow = computed(() => {
+  if (isFollow.value) {
+    return "已关注";
+  } else {
+    return "关注";
+  }
+});
 const img = ref(
   "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
 );
 const uname = ref("暂无昵称");
 const desc = ref("暂无简介");
-onMounted(() => {
-  watchEffect(() => {
-    if (props.data) {
-      uname.value = props.data.uname;
-      if (props.data.desc) {
-        desc.value = props.data.desc;
-      }
-      if (props.data.avatar) {
-        img.value = `http://localhost:3000/avatar/${props.data.avatar}`;
+watchEffect(async () => {
+  if (props.data) {
+    uname.value = props.data.uname;
+    const res = await getFans(props.data.id);
+    console.log(props.data.id);
+    subscribe.value = res.length;
+    if (props.data.desc) {
+      desc.value = props.data.desc;
+    }
+    if (props.data.avatar) {
+      img.value = `http://localhost:3000/avatar/${props.data.avatar}`;
+    }
+  }
+});
+const gotoSpace = () => {
+  router.push(`/user/${props.data.id}/main`);
+};
+const submitFollow = () => {
+  if (store.isLoggedIn) {
+    if (store.id == props.data.id) {
+      ElMessage.error("不能关注自己");
+      return;
+    } else {
+      if (isFollow.value) {
+        ElMessage.success("取消关注成功");
+        subscribe.value--;
+        isFollow.value = false;
+      } else {
+        ElMessage.success("关注成功");
+        subscribe.value++;
+        isFollow.value = true;
       }
     }
-  });
-});
+  } else {
+    ElMessage.error("请先登录");
+  }
+};
 </script>
 
 <style lang="scss" scoped>

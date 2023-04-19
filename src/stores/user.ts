@@ -9,14 +9,16 @@ export const useUserStore = defineStore({
       "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
     id: 0,
     uname: "未登录",
+    followArr: [],
   }),
 
   actions: {
-    setUser(avatar, id, uname, isLoggedIn) {
+    setUser(avatar, id, uname, isLoggedIn, arr) {
       this.avatar = `http://localhost:3000/avatar/${avatar}`;
       this.id = id;
       this.uname = uname;
       this.isLoggedIn = isLoggedIn;
+      this.followArr = arr;
     },
     logout() {
       location.reload();
@@ -35,6 +37,7 @@ export const useUserStore = defineStore({
 
       // 更新登录状态
       this.isLoggedIn = false;
+      this.followArr = [];
     },
   },
 });

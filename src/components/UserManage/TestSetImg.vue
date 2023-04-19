@@ -134,7 +134,6 @@ async function drawSlide() {
 }
 watch(newLeft, (newLeft) => {
   if (video.value) {
-    console.log(newLeft);
     video.value.currentTime =
       (newLeft / slideBar.value.offsetWidth) * videoDuration.value;
     mainDraw();

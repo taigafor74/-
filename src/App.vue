@@ -14,11 +14,23 @@ onMounted(async () => {
   // 从 localStorage 获取用户信息
   const userInfo = JSON.parse(localStorage.getItem("user") || "null");
   if (userInfo) {
-    userStore.setUser(userInfo.avatar, userInfo.id, userInfo.uname, true);
+    userStore.setUser(
+      userInfo.avatar,
+      userInfo.id,
+      userInfo.uname,
+      true,
+      userInfo.followArr
+    );
     if (userInfo) {
       const tokenValid = await checkToken();
       if (tokenValid) {
-        userStore.setUser(userInfo.avatar, userInfo.id, userInfo.uname, true);
+        userStore.setUser(
+          userInfo.avatar,
+          userInfo.id,
+          userInfo.uname,
+          true,
+          userInfo.followArr
+        );
       } else {
         // 更新登录状态
         userStore.logout();

@@ -3,20 +3,27 @@
     <div class="main-content">
       <div class="left">
         <SideBar></SideBar>
-        <LeftBar></LeftBar>
+        <LeftBar :item="data"></LeftBar>
       </div>
       <div class="right">
-        <VideoCard v-for="item in 32"></VideoCard>
+        <VideoItem v-for="item in data" :item="item"></VideoItem>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { ref } from "vue";
 import SideBar from "@/components/mainPage/SideBar.vue";
 import LeftBar from "@/components/VideoList/LeftBar.vue";
 import VideoItem from "@/components/VideoList/VideoItem.vue";
+import { getVideos } from "@/api/mainPage";
+const data = ref([]);
+async function loadVideos() {
+  const videos = await getVideos();
+  data.value = videos.data;
+}
+loadVideos();
 </script>
 
 <style lang="scss" scoped>

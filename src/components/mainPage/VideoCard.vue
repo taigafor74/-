@@ -1,19 +1,19 @@
 <template>
   <div class="video-card-container">
-    <div class="video-card" @click="gotoVideo(item.id)">
+    <div class="video-card" @click="gotoVideo(item.vid)">
       <div class="img-box">
         <img :src="imgPath" alt="video-img" />
       </div>
       <div class="video-intro">
         <div class="video-intro-avatar">
-          <img src="@/assets/test_avatar.jpg" alt="" />
+          <img :src="avatar" alt="" />
         </div>
         <div class="video-intro-text">
           <div class="video-intro-text-title">
             <h3>{{ title }}</h3>
           </div>
           <div class="video-intro-text-info">
-            <div>Kitsune</div>
+            <div>{{ uname }}</div>
             <div>觀看次數：{{ playCount }} {{ time }}</div>
           </div>
         </div>
@@ -31,7 +31,12 @@ const mainStore = useMainStore();
 const imgPath = ref("");
 const title = ref("");
 const time = ref("");
+const author = ref("");
 const playCount = ref("0");
+const uname = ref("???");
+const avatar = ref(
+  "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+);
 const props = defineProps({
   item: {
     type: Object,
@@ -43,6 +48,8 @@ onMounted(() => {
     if (props.item.title && props.item.img) {
       title.value = props.item.title;
       imgPath.value = `http://localhost:3000/videoImg/${props.item.img}`;
+      avatar.value = `http://localhost:3000/avatar/${props.item.avatar}`;
+      uname.value = props.item.uname;
       time.value = timeAgo(props.item.upload_date);
       playCount.value = formatPlayCount(props.item.playcount);
     }

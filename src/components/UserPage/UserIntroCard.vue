@@ -2,16 +2,16 @@
   <el-card class="box-card">
     <div class="card-con">
       <span>
-        <img src="@/assets/test_avatar.jpg" />
+        <img :src="avatar" @click="gotoSpace" />
       </span>
       <div class="right">
-        <div class="name">一只生煎馒头</div>
+        <div class="name" @click="gotoSpace">{{ uname }}</div>
         <div class="data">
-          <span>关注 2341</span>
-          <span>粉丝 1231</span>
+          <span>关注 {{ follows }}</span>
+          <span>粉丝 {{ fans }}</span>
         </div>
         <div class="desc">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          {{ desc }}
         </div>
         <div class="btn">
           <el-button size="small">发消息</el-button>
@@ -22,7 +22,37 @@
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { defineProps, ref, watchEffect } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
+const avatar = ref(
+  "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+);
+const uname = ref("test-00");
+const desc = ref("暂无简介");
+const follows = ref(0);
+const fans = ref(0);
+const props = defineProps({
+  data: {
+    type: Object,
+    required: true,
+  },
+});
+watchEffect(() => {
+  if (props.data.id !== 0) {
+    avatar.value = props.data.avatar;
+    uname.value = props.data.uname;
+    desc.value = props.data.desc;
+    follows.value = props.data.follows;
+    fans.value = props.data.fans;
+  }
+});
+const gotoSpace = () => {
+  router.push({
+    path: "/user/" + props.data.id + "/main",
+  });
+  router.go(0);
+};
 </script>
 
 <style lang="scss" scoped>
