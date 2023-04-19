@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { defineProps, watchEffect, onMounted, ref, computed } from "vue";
-import { getFans } from "@/api/follow";
+import { getFans, follow, updateFollow, unfollow } from "@/api/follow";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { ElMessage } from "element-plus";
@@ -65,12 +65,25 @@ const img = ref(
 );
 const uname = ref("暂无昵称");
 const desc = ref("暂无简介");
+
+async function setFollow() {
+  if (store.isLoggedIn) {
+    if (props.data.id) {
+      store.followArr.forEach((item) => {
+        if (item == props.data.id) {
+          isFollow.value = true;
+        }
+      });
+    }
+  }
+  return;
+}
 watchEffect(async () => {
   if (props.data) {
     uname.value = props.data.uname;
     const res = await getFans(props.data.id);
-    console.log(props.data.id);
     subscribe.value = res.length;
+    await setFollow();
     if (props.data.desc) {
       desc.value = props.data.desc;
     }
@@ -82,18 +95,22 @@ watchEffect(async () => {
 const gotoSpace = () => {
   router.push(`/user/${props.data.id}/main`);
 };
-const submitFollow = () => {
+const submitFollow = async () => {
   if (store.isLoggedIn) {
     if (store.id == props.data.id) {
       ElMessage.error("不能关注自己");
       return;
     } else {
       if (isFollow.value) {
-        ElMessage.success("取消关注成功");
+        const message = await unfollow(store.id, props.data.id);
+        updateFollow(store, props.data.id, false);
+        ElMessage.success(message);
         subscribe.value--;
         isFollow.value = false;
       } else {
-        ElMessage.success("关注成功");
+        const message = await follow(store.id, props.data.id);
+        updateFollow(store, props.data.id, true);
+        ElMessage.success(message);
         subscribe.value++;
         isFollow.value = true;
       }

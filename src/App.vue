@@ -21,6 +21,7 @@ onMounted(async () => {
       true,
       userInfo.followArr
     );
+    userStore.avatar = userInfo.avatar;
     if (userInfo) {
       const tokenValid = await checkToken();
       if (tokenValid) {
@@ -31,6 +32,7 @@ onMounted(async () => {
           true,
           userInfo.followArr
         );
+        userStore.avatar = userInfo.avatar;
       } else {
         // 更新登录状态
         userStore.logout();

@@ -3,11 +3,11 @@
     <div class="name">{{ store.uname }}</div>
     <div class="account-data">
       <div class="item" @click="goFollow">
-        <span>199</span>
+        <span>{{ follow }}</span>
         <span>关注</span>
       </div>
-      <div class="item">
-        <span>3000</span>
+      <div class="item" @click="goFans">
+        <span>{{ fans }}</span>
         <span>粉丝</span>
       </div>
     </div>
@@ -38,13 +38,15 @@
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { watchEffect, ref } from "vue";
 import { showLogin } from "@/stores/counter";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
+import { getFans, getFollows } from "@/api/follow";
 const router = useRouter();
 const store = useUserStore();
 const showLoginState = showLogin();
+const follow = ref(store.followArr.length);
 const goFollow = () => {
   router.push({
     path: `/user/${store.id}/follow/follow`,
@@ -61,6 +63,17 @@ function gotoMain() {
     path: `/user/${store.id}/main`,
   });
 }
+function goFans() {
+  router.push({
+    path: `/user/${store.id}/follow/fans`,
+  });
+}
+const fans = ref(0);
+async function getData() {
+  const fansRes = await getFans(store.id);
+  fans.value = fansRes.length;
+}
+getData();
 </script>
 
 <style lang="scss" scoped>

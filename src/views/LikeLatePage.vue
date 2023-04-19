@@ -18,10 +18,15 @@ import SideBar from "@/components/mainPage/SideBar.vue";
 import LeftBar from "@/components/VideoList/LeftBar.vue";
 import VideoItem from "@/components/VideoList/VideoItem.vue";
 import { getVideos } from "@/api/mainPage";
+import { useUserStore } from "@/stores/user";
+import { getWatch } from "@/api/watch";
+const store = useUserStore();
 const data = ref([]);
 async function loadVideos() {
-  const videos = await getVideos();
-  data.value = videos.data;
+  if (store.isLoggedIn) {
+    const watch = await getWatch(store.id);
+    data.value = watch.data;
+  }
 }
 loadVideos();
 </script>

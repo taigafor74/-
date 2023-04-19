@@ -13,9 +13,9 @@
         <div class="title">喜欢的影片</div>
         <div class="info">
           <div class="wrap">
-            <div class="name">电锯锯木头</div>
+            <div class="name">{{ uname }}</div>
             <div class="bottom">
-              <div class="item">126部影片</div>
+              <div class="item">{{ length }}部影片</div>
               <div class="item">观看次数:74次</div>
             </div>
           </div>
@@ -42,30 +42,27 @@ import { useRouter } from "vue-router";
 import { defineProps, watchEffect } from "vue";
 import { useMainStore } from "@/stores/main";
 import { timeAgo } from "@/utils/getTime";
+import { useUserStore } from "@/stores/user";
+const store = useUserStore();
 const mainStore = useMainStore();
 const imgPath = ref("");
+const uname = ref("");
+const length = ref(0);
 const props = defineProps({
   item: {
     type: Object,
     required: true,
   },
 });
-// const imageSrc = new URL("@/assets/test.jpg", import.meta.url).href;
 const colors = ref({});
-// onMounted(async () => {
-//   watchEffect(() => {
-//     if (props.item.length > 0) {
-//       const item = props.item[0];
-//       imgPath.value = `http://localhost:3000/videoImg/${item.img}`;
-//     }
-//   });
-// });
 watchEffect(async () => {
   if (props.item.length > 0) {
     const item = props.item[0];
     imgPath.value = `http://localhost:3000/videoImg/${item.img}`;
     const result = await getColorsFromImage(imgPath.value);
     colors.value = result;
+    uname.value = store.uname;
+    length.value = props.item.length;
   }
 });
 

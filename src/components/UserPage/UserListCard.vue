@@ -21,16 +21,25 @@
       <UserIntroCard :data="data" />
     </el-popover>
     <div class="btn">
-      <el-button>已关注</el-button>
+      <el-button @click="submitFollow">{{ is_follow }}</el-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, watchEffect, reactive } from "vue";
+import { ref, defineProps, watchEffect, reactive, computed } from "vue";
 import UserIntroCard from "./UserIntroCard.vue";
-import { getFans, getFollows } from "@/api/follow";
+import { ElMessage } from "element-plus";
+import {
+  getFans,
+  getFollows,
+  follow,
+  unfollow,
+  updateFollow,
+} from "@/api/follow";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+const store = useUserStore();
 const router = useRouter();
 const visible = ref(false);
 const uname = ref("test-00");
@@ -38,6 +47,26 @@ const desc = ref("暂无简介");
 const avatar = ref(
   "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
 );
+const isFollow = ref(false);
+const is_follow = computed(() => {
+  if (isFollow.value) {
+    return "已关注";
+  } else {
+    return "关注";
+  }
+});
+async function setFollow() {
+  if (store.isLoggedIn) {
+    if (props.item.id) {
+      store.followArr.forEach((item) => {
+        if (item == props.item.id) {
+          isFollow.value = true;
+        }
+      });
+    }
+  }
+  return;
+}
 const props = defineProps({
   item: {
     type: Object,
@@ -57,6 +86,7 @@ watchEffect(async () => {
     uname.value = props.item.uname;
     desc.value = props.item.desc;
     avatar.value = `http://localhost:3000/avatar/${props.item.avatar}`;
+    await setFollow();
     data.uname = props.item.uname;
     data.desc = props.item.desc;
     data.id = props.item.id;
@@ -75,6 +105,29 @@ async function gotoSpace() {
     await router.push(`/user/${data.id}/main`);
   }
 }
+
+const submitFollow = async () => {
+  if (store.isLoggedIn) {
+    if (store.id == props.item.id) {
+      ElMessage.error("不能关注自己");
+      return;
+    } else {
+      if (isFollow.value) {
+        const message = await unfollow(store.id, props.item.id);
+        updateFollow(store, props.item.id, false);
+        ElMessage.success(message);
+        isFollow.value = false;
+      } else {
+        const message = await follow(store.id, props.item.id);
+        updateFollow(store, props.item.id, true);
+        ElMessage.success(message);
+        isFollow.value = true;
+      }
+    }
+  } else {
+    ElMessage.error("请先登录");
+  }
+};
 </script>
 
 <style lang="scss" scoped>

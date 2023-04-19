@@ -43,7 +43,7 @@ import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import request from "@/axios/index";
 import { login } from "@/api/loginAndR";
-import { getFollows } from "@/api/follow";
+import { getFollows, getFans } from "@/api/follow";
 const userStore = useUserStore();
 const router = useRouter();
 const showLoginState = showLogin();
@@ -80,6 +80,7 @@ async function getFollowId(arr) {
   }
   return;
 }
+
 async function loginSubmit(e: Event) {
   e.preventDefault();
   const res = await login(loginForm);
@@ -94,7 +95,7 @@ async function loginSubmit(e: Event) {
       JSON.stringify({
         id: res.id,
         uname: res.uname,
-        avatar: res.avatar,
+        avatar: userStore.avatar,
         followArr: followId.value,
       })
     );

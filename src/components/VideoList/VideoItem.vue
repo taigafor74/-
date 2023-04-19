@@ -1,5 +1,5 @@
 <template>
-  <div class="video-item-con">
+  <div class="video-item-con" @click="gotoVideo">
     <div class="left">
       <img :src="imgPath" />
     </div>
@@ -8,7 +8,7 @@
         <h3>{{ title }}</h3>
       </div>
       <div class="bottom">
-        <div class="item">admin1</div>
+        <div class="item">{{ uname }}</div>
         <div class="dot">·</div>
         <div class="item">观看次数:{{ playCount }}</div>
         <div class="dot">·</div>
@@ -29,6 +29,7 @@ const title = ref("");
 const time = ref("");
 const author = ref("");
 const playCount = ref("0");
+const uname = ref("??？");
 const props = defineProps({
   item: {
     type: Object,
@@ -42,6 +43,7 @@ onMounted(() => {
       imgPath.value = `http://localhost:3000/videoImg/${props.item.img}`;
       time.value = timeAgo(props.item.upload_date);
       playCount.value = formatPlayCount(props.item.playcount);
+      uname.value = props.item.uname;
     }
   });
 });
@@ -54,12 +56,12 @@ function formatPlayCount(playCount) {
 }
 
 const router = useRouter();
-function gotoVideo(path) {
+function gotoVideo() {
   router.push({
     name: "video",
     path: "/video",
     query: {
-      vid: path,
+      vid: props.item.vid,
     },
   });
 }

@@ -11,7 +11,6 @@ export const useUserStore = defineStore({
     uname: "未登录",
     followArr: [],
   }),
-
   actions: {
     setUser(avatar, id, uname, isLoggedIn, arr) {
       this.avatar = `http://localhost:3000/avatar/${avatar}`;

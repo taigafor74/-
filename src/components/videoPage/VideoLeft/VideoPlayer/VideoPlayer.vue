@@ -202,10 +202,14 @@ import {
   reactive,
   defineProps,
   watchEffect,
+  onBeforeUnmount,
 } from "vue";
 import Hls from "hls.js/dist/hls.min.js";
 import { getVideo } from "@/api/mainPage";
 import { useRoute, useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { setWatch } from "@/api/watch";
+const store = useUserStore();
 const videoPlayer = ref();
 const menuItem1 = ref();
 const menuItem2 = ref();
@@ -327,6 +331,20 @@ onMounted(() => {
       danmakuPool.init();
     }
   });
+});
+onUnmounted(() => {
+  clearAll();
+  hls.destroy();
+});
+onBeforeUnmount(async () => {
+  if (store.isLoggedIn) {
+    await setWatch({
+      user_id: store.id,
+      video_id: props.data.vid,
+      watch_time: videoPlayer.value.currentTime,
+    });
+  }
+  return;
 });
 function sendDanmaku() {
   userInput.value.value = "";
