@@ -3,22 +3,22 @@
     <div class="reply-item">
       <div class="avatar-box">
         <div class="avatar">
-          <img src="@/assets/test_avatar.jpg" alt="" />
+          <img :src="img" alt="" />
         </div>
       </div>
       <div class="main-comment-box">
         <div class="user-info">
-          <div class="user-name">电锯锯木头</div>
+          <div class="user-name">{{ props.item?.uname }}</div>
           <span class="reply-content">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eos
-            consequatur sit commodi deleniti suscipit voluptatem consectetur
-            cumque nam molestiae optio ex, ad incidunt harum enim doloribus
-            vitae molestias blanditiis. Esse.
+            <div class="reply-to" v-if="replyname">{{ replyname }}</div>
+            {{ props.item?.content }}
           </span>
         </div>
         <div class="reply">
           <div class="reply-info">
-            <span class="reply-time">36分钟前</span>
+            <span class="reply-time">{{
+              timeAgo(props.item?.create_time)
+            }}</span>
             <div class="reply-like">
               <svg
                 t="1636093575017"
@@ -55,7 +55,19 @@
                 ></path>
               </svg>
             </div>
-            <span class="reply-btn">回复</span>
+            <span
+              class="reply-btn"
+              @click="
+                toggleReplyInput(
+                  props.item?.parrent_id,
+                  props.item?.comment_id,
+                  userStore.uname,
+                  props.item?.uname
+                );
+                $emit('setActiveComment', props.item?.parrent_id);
+              "
+              >回复</span
+            >
           </div>
         </div>
       </div>
@@ -64,7 +76,35 @@
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { defineProps, ref, onMounted, watchEffect } from "vue";
+import { timeAgo } from "@/utils/getTime";
+import { useCommentStore } from "@/stores/comment";
+import { useUserStore } from "@/stores/user";
+const userStore = useUserStore();
+const store = useCommentStore();
+const img = ref("");
+const showReply = ref(false);
+const replyname = ref("");
+const props = defineProps({
+  item: {
+    type: Object,
+    default: () => {},
+  },
+  toggleReplyInput: {
+    type: Function,
+    default: () => {},
+  },
+});
+watchEffect(async () => {
+  if (props.item) {
+    img.value = `http://localhost:3000/avatar/${props.item.avatar}`;
+    if (props.item.reply_user_name == null) {
+      replyname.value = ``;
+    } else {
+      replyname.value = `回复@${props.item.reply_user_name}:`;
+    }
+  }
+});
 </script>
 
 <style lang="scss" scoped>
@@ -98,6 +138,7 @@ import {} from "vue";
         margin-bottom: 4px;
         display: flex;
         padding-top: 5px;
+        align-items: center;
         .user-name {
           white-space: nowrap;
           font-weight: 500;
@@ -110,6 +151,10 @@ import {} from "vue";
           font-weight: 400;
           box-sizing: border-box;
           color: white;
+          display: flex;
+          .reply-to {
+            color: purple;
+          }
         }
       }
       .reply {

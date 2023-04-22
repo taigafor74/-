@@ -104,13 +104,15 @@ function gotoVideo(path) {
       // height: 5.75823vw;
       display: flex;
       .video-intro-avatar {
-        width: 2.108963vw;
-        // height: 2.108963vw;
+        width: 36px;
+        height: 36px;
         margin-top: 0.702988vw;
         margin-right: 0.702988vw;
 
         img {
-          width: 2.108963vw;
+          width: 36px;
+          height: 36px;
+          object-fit: cover;
           // height: 100%;
           border-radius: 50%;
         }

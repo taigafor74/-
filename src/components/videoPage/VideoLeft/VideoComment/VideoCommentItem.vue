@@ -3,22 +3,21 @@
     <div class="item-container">
       <div class="avatar-box">
         <div class="avatar">
-          <img src="@/assets/test_avatar.jpg" alt="" />
+          <img :src="img" alt="" />
         </div>
       </div>
       <div class="main-comment-box">
         <div class="user-info">
-          <div class="user-name">电锯锯木头</div>
+          <div class="user-name">{{ props.item?.uname }}</div>
         </div>
         <div class="reply">
           <span class="reply-content">
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eos
-            consequatur sit commodi deleniti suscipit voluptatem consectetur
-            cumque nam molestiae optio ex, ad incidunt harum enim doloribus
-            vitae molestias blanditiis. Esse.
+            {{ props.item?.content }}
           </span>
           <div class="reply-info">
-            <span class="reply-time">36分钟前</span>
+            <span class="reply-time">{{
+              timeAgo(props.item?.create_time)
+            }}</span>
             <div class="reply-like">
               <svg
                 t="1636093575017"
@@ -55,18 +54,63 @@
                 ></path>
               </svg>
             </div>
-            <span class="reply-btn">回复</span>
+            <span
+              class="reply-btn"
+              @click="
+                reply(props.item?.comment_id, null, userStore.uname);
+                $emit('setActiveComment', props.item?.comment_id);
+              "
+              >回复</span
+            >
           </div>
         </div>
       </div>
     </div>
-    <VideoCommentReply v-for="item in 3"></VideoCommentReply>
+    <VideoCommentReply
+      v-for="item in replyData"
+      :item="item"
+      :toggleReplyInput="reply"
+      @setActiveComment="$emit('setActiveComment', $event)"
+    ></VideoCommentReply>
+    <VideoCommentInput
+      v-if="showReply && props.item?.comment_id === currentActiveComment"
+    ></VideoCommentInput>
     <div class="bottom-line"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import VideoCommentReply from "./VideoCommentReply.vue";
+import VideoCommentInput from "./VideoCommentInput.vue";
+import { useCommentStore } from "@/stores/comment";
+import { timeAgo } from "@/utils/getTime";
+import { getReply } from "@/api/comment";
+import { defineProps, ref, onMounted, watchEffect } from "vue";
+import { useUserStore } from "@/stores/user";
+const userStore = useUserStore();
+const showReply = ref(false);
+const store = useCommentStore();
+const type = ref("reply");
+const img = ref("");
+const props = defineProps({
+  item: Object,
+  currentActiveComment: [String, Number],
+});
+const replyData = ref([]);
+watchEffect(async () => {
+  if (props.item) {
+    replyData.value = await getReply(props.item.comment_id);
+    img.value = `http://localhost:3000/avatar/${props.item.avatar}`;
+  }
+});
+const reply = (parrent_id, replyToId = null, uname, replyToWho = null) => {
+  showReply.value = true;
+  store.replyTo = "";
+  store.parrentId = parrent_id;
+  store.replyTo = replyToId;
+  store.uname = uname;
+  store.replyToWho = replyToWho;
+};
 </script>
 
 <style lang="scss" scoped>

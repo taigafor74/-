@@ -10,3 +10,14 @@ export function getUserInfo(userId) {
       return res.data;
     });
 }
+export function updateAvatar(formData) {
+  return request
+    .put("/user/updateAvatar", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      return res.data;
+    });
+}

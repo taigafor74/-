@@ -14,8 +14,7 @@ import UserInfo from "./UserInfo.vue";
 
 <style lang="scss" scoped>
 .user-side-bar-container {
-  width: 20.503808vw;
-  height: 100vh;
+  width: 320px;
   background-color: rgb(18, 18, 18);
 }
 </style>

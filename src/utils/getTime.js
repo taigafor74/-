@@ -31,6 +31,8 @@ export function timeAgo(dateString) {
   } else if (diffInMinutes > 0) {
     return `${diffInMinutes} 分钟前`;
   } else {
-    return `${diffInSeconds} 秒前`;
+    if (diffInSeconds <= 0) {
+      return "刚刚";
+    } else return `${diffInSeconds} 秒前`;
   }
 }

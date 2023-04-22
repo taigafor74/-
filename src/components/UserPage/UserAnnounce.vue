@@ -19,17 +19,17 @@
   width: 100%;
   margin-bottom: 0.585823vw;
   padding: 0.878735vw 1.171646vw 1.054482vw;
-  height: 15.2314vw;
+  height: 260px;
   background: rgb(0, 0, 0);
   border: 0.05852vw solid rgb(61, 2, 199);
   border-radius: 0.492912vw;
   .head {
     display: flex;
     align-items: center;
-    font-size: 0.820152vw;
-    height: 2.636204vw;
-    line-height: 2.636204vw;
-    margin: -0.878735vw 0 0.585823vw;
+    font-size: 14px;
+    height: 45px;
+    line-height: 45px;
+    margin: -18px 0 10px;
     border-bottom: 0.058582vw solid #7c7a7a;
   }
   //1
@@ -37,7 +37,7 @@
     textarea {
       color: white;
       background: transparent;
-      width: 17.926186vw;
+      width: 280px;
       height: 10.076157vw;
       font-size: 0.702988vw;
       padding: 0.585823vw;

@@ -1,12 +1,12 @@
 <template>
   <div class="video-title-con">
     <h1 class="title">
-      {{ data.title }}
+      {{ props.data.title }}
     </h1>
     <div class="data-list">
       <span class="item">
         <img src="@/assets/icon/view.svg" alt="" />
-        11.6万
+        {{ formatPlayCount(props.data.playcount) }}
       </span>
       <span class="item">
         <img src="@/assets/icon/dm.svg" alt="" />
@@ -14,7 +14,7 @@
       </span>
       <span class="item">
         <img src="@/assets/icon/下载.svg" alt="" />
-        {{ data.upload_date }}
+        {{ props.data.upload_date }}
       </span>
     </div>
   </div>
@@ -34,6 +34,13 @@ onMounted(() => {
     data.value = props.data;
   });
 });
+function formatPlayCount(playCount) {
+  if (playCount < 10000) {
+    return `${playCount}次`;
+  } else if (playCount >= 10000 && playCount < 1000000) {
+    return `${(playCount / 10000).toFixed(1)}万次`;
+  }
+}
 </script>
 
 <style lang="scss" scoped>

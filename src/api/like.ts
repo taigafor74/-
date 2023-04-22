@@ -16,3 +16,8 @@ export function deleteLike(video_id, user_id) {
       return res.data.message;
     });
 }
+export function userLike(id) {
+  return request.get(`/like/userLike/${id}`).then((res) => {
+    return res.data.data;
+  });
+}

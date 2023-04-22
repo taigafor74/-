@@ -8,7 +8,7 @@
       <VideoComment></VideoComment>
       <Transition name="fade">
         <div class="fixed-input" v-if="show">
-          <VideoCommentInput></VideoCommentInput>
+          <VideoCommentInput :type="type"></VideoCommentInput>
         </div>
       </Transition>
     </div>
@@ -27,10 +27,13 @@ import VideoTitle from "@/components/videoPage/VideoLeft/VideoTitle.vue";
 import VideoDesc from "@/components/videoPage/VideoLeft/VideoDesc.vue";
 import VideoCommentInput from "@/components/videoPage/VideoLeft/VideoComment/VideoCommentInput.vue";
 import { useVideoStore } from "@/stores/VideoStore";
-import { computed, onMounted, ref } from "vue";
+import { useCommentStore } from "@/stores/comment";
+import { computed, onMounted, ref, onUnmounted } from "vue";
 import { getVideo } from "@/api/mainPage";
 import { useRoute, useRouter } from "vue-router";
 const route = useRoute();
+const type = ref("main");
+const commentStore = useCommentStore();
 const router = useRouter();
 const data = ref([]);
 const videoStore = useVideoStore();
@@ -39,6 +42,9 @@ const getData = async () => {
   data.value = await getVideo(route.query.vid);
   data.value = data.value[0];
 };
+onUnmounted(() => {
+  commentStore.resetAll();
+});
 getData();
 </script>
 
@@ -58,7 +64,7 @@ getData();
       position: fixed;
       padding: 10px 0;
       bottom: 0;
-      width: 1063px;
+      width: 62.272994vw;
     }
   }
   .video-right-container {

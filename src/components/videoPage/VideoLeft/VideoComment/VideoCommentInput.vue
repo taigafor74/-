@@ -2,17 +2,83 @@
   <div class="comment-input-con">
     <div class="avatar-box">
       <div class="avatar">
-        <img src="@/assets/test_avatar.jpg" alt="" />
+        <img :src="img" alt="" />
       </div>
     </div>
-    <textarea class="input-box" placeholder="发一条评论吧"></textarea>
+    <textarea
+      class="input-box"
+      :placeholder="placeholder"
+      v-model="comment"
+      @focus="onFocus"
+    ></textarea>
     <div class="send-box">
-      <div class="send-text">发布</div>
+      <div class="send-text" @click="submitComment">发布</div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ElMessage } from "element-plus";
+import { ref, onMounted, defineProps, watchEffect } from "vue";
+import { useRoute } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { useCommentStore } from "@/stores/comment";
+import { postComment } from "@/api/comment";
+const route = useRoute();
+const commentStore = useCommentStore();
+const store = useUserStore();
+const comment = ref("");
+const img = ref("");
+const placeholder = ref("说点什么吧...");
+const props = defineProps({
+  type: String,
+});
+watchEffect(() => {
+  if (commentStore.replyToWho) {
+    placeholder.value = `回复@${commentStore.replyToWho}:`;
+  }
+});
+function onFocus() {
+  if (props.type == "main") {
+    commentStore.resetAll();
+  }
+}
+const submitComment = async () => {
+  if (store.isLoggedIn) {
+    if (comment.value == "") {
+      ElMessage.error("评论不能为空");
+      return;
+    }
+    if (commentStore.parrentId) {
+      const res = await postComment(
+        route.query.vid,
+        store.id,
+        comment.value,
+        commentStore.uname,
+        commentStore.parrentId,
+        commentStore.replyTo,
+        commentStore.replyToWho
+      );
+      ElMessage.success(res.message);
+    } else {
+      const res = await postComment(
+        route.query.vid,
+        store.id,
+        comment.value,
+        store.uname
+      );
+      ElMessage.success(res.message);
+      commentStore.comments.unshift(res.data);
+    }
+    comment.value = "";
+  } else {
+    ElMessage.error("请先登录");
+  }
+};
+onMounted(() => {
+  img.value = store.avatar;
+});
+</script>
 
 <style lang="scss" scoped>
 .comment-input-con {

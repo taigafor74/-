@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="user-video-main">
-      <UserVideoCard v-for="item in 20" @click="goto"></UserVideoCard>
+      <UserVideoCard v-for="item in data" :item="item"></UserVideoCard>
     </div>
   </div>
 </template>
@@ -17,13 +17,18 @@
 <script setup lang="ts">
 import UserVideoCard from "@/components/UserPage/UserVideoCard.vue";
 import { useRouter } from "vue-router";
-const router = useRouter();
-function goto() {
-  router.push({
-    name: "video",
-    path: "/video",
-  });
-}
+import { getVideoAllByUser } from "@/api/video";
+import { useRoute } from "vue-router";
+import { onMounted, ref } from "vue";
+const route = useRoute();
+const data = ref([]);
+const getVideo = async () => {
+  const res = await getVideoAllByUser(route.params.id);
+  data.value = res.data;
+};
+onMounted(() => {
+  getVideo();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -61,9 +66,8 @@ function goto() {
   .user-video-main {
     width: 100%;
     padding-top: 1.757469vw;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: start;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 </style>
