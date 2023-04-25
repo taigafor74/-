@@ -44,6 +44,9 @@ import { ElMessage } from "element-plus";
 import request from "@/axios/index";
 import { login } from "@/api/loginAndR";
 import { getFollows, getFans } from "@/api/follow";
+import { useSocketStore } from "@/stores/socket";
+const useSocket = useSocketStore();
+const socket = ref<Socket | null>(null);
 const userStore = useUserStore();
 const router = useRouter();
 const showLoginState = showLogin();
@@ -99,6 +102,8 @@ async function loginSubmit(e: Event) {
         followArr: followId.value,
       })
     );
+    // 连接到 Socket.IO 服务器
+    useSocket.buildSocket(res.id);
     showLoginState.isLogin = false;
     router.push("/main");
   } else {

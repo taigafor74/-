@@ -21,6 +21,23 @@ const router = createRouter({
       component: () => import("../views/LikeLatePage.vue"),
     },
     {
+      path: "/reply",
+      name: "reply",
+      component: () => import("../views/ReplyPage/ReplyPage.vue"),
+      children: [
+        {
+          path: "like",
+          name: "replyLike",
+          component: () => import("../views/ReplyPage/ReplyLikePage.vue"),
+        },
+        {
+          path: "comment",
+          name: "replyComment",
+          component: () => import("../views/ReplyPage/ReplyCommentPage.vue"),
+        },
+      ],
+    },
+    {
       path: "/video",
       name: "video",
       component: () => import("../views/VideoPage.vue"),

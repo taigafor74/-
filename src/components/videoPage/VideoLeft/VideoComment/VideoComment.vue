@@ -5,6 +5,7 @@
       <VideoCommentInput
         ref="videoCommentInputRef"
         :type="type"
+        :orignuid="props.data?.user_id"
       ></VideoCommentInput>
       <div style="margin-top: 20px"></div>
       <VideoCommentItem
@@ -22,7 +23,7 @@ import VideoCommentHeader from "./VideoCommentHeader.vue";
 import VideoCommentInput from "./VideoCommentInput.vue";
 import VideoCommentItem from "./VideoCommentItem.vue";
 import { useVideoStore } from "@/stores/VideoStore";
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, defineProps, watchEffect } from "vue";
 import { getComment } from "@/api/comment";
 import { useRoute } from "vue-router";
 import { useCommentStore } from "@/stores/comment";
@@ -36,6 +37,9 @@ const type = ref("main");
 const videoStore = useVideoStore();
 const videoCommentInputRef: any = ref(null);
 const commentData = ref([]);
+const props = defineProps({
+  data: Object,
+});
 const handleScroll = () => {
   const scrollTop =
     document.documentElement.scrollTop || document.body.scrollTop;
@@ -50,8 +54,6 @@ const handleScroll = () => {
 
 onMounted(async () => {
   commentStore.comments = await getComment(route.query.vid);
-  console.log(commentStore.comments);
-
   window.addEventListener("scroll", handleScroll);
 });
 

@@ -62,7 +62,8 @@
                   props.item?.parrent_id,
                   props.item?.comment_id,
                   userStore.uname,
-                  props.item?.uname
+                  props.item?.uname,
+                  props.item?.id
                 );
                 $emit('setActiveComment', props.item?.parrent_id);
               "
@@ -98,6 +99,8 @@ const props = defineProps({
 watchEffect(async () => {
   if (props.item) {
     img.value = `http://localhost:3000/avatar/${props.item.avatar}`;
+    console.log(props.item);
+
     if (props.item.reply_user_name == null) {
       replyname.value = ``;
     } else {

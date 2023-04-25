@@ -57,7 +57,13 @@
             <span
               class="reply-btn"
               @click="
-                reply(props.item?.comment_id, null, userStore.uname);
+                reply(
+                  props.item?.comment_id,
+                  null,
+                  userStore.uname,
+                  null,
+                  props.item?.id
+                );
                 $emit('setActiveComment', props.item?.comment_id);
               "
               >回复</span
@@ -74,6 +80,7 @@
     ></VideoCommentReply>
     <VideoCommentInput
       v-if="showReply && props.item?.comment_id === currentActiveComment"
+      @commentPosted="addReply"
     ></VideoCommentInput>
     <div class="bottom-line"></div>
   </div>
@@ -96,6 +103,9 @@ const props = defineProps({
   item: Object,
   currentActiveComment: [String, Number],
 });
+const addReply = (newReply) => {
+  replyData.value.unshift(newReply);
+};
 const replyData = ref([]);
 watchEffect(async () => {
   if (props.item) {
@@ -103,13 +113,14 @@ watchEffect(async () => {
     img.value = `http://localhost:3000/avatar/${props.item.avatar}`;
   }
 });
-const reply = (parrent_id, replyToId = null, uname, replyToWho = null) => {
+const reply = (parrent_id, replyToId = null, uname, replyToWho = null, id) => {
   showReply.value = true;
   store.replyTo = "";
   store.parrentId = parrent_id;
   store.replyTo = replyToId;
   store.uname = uname;
   store.replyToWho = replyToWho;
+  store.replyToId = id;
 };
 </script>
 

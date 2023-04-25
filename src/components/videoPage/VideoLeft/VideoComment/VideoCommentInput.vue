@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { ElMessage } from "element-plus";
-import { ref, onMounted, defineProps, watchEffect } from "vue";
+import { ref, onMounted, defineProps, watchEffect, defineEmits } from "vue";
 import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { useCommentStore } from "@/stores/comment";
@@ -30,12 +30,18 @@ const store = useUserStore();
 const comment = ref("");
 const img = ref("");
 const placeholder = ref("说点什么吧...");
+const emit = defineEmits(["commentPosted"]);
+const orignuid = ref(0);
 const props = defineProps({
   type: String,
+  orignuid: Number,
 });
 watchEffect(() => {
   if (commentStore.replyToWho) {
     placeholder.value = `回复@${commentStore.replyToWho}:`;
+  }
+  if (props.orignuid) {
+    orignuid.value = props.orignuid;
   }
 });
 function onFocus() {
@@ -57,15 +63,23 @@ const submitComment = async () => {
         commentStore.uname,
         commentStore.parrentId,
         commentStore.replyTo,
-        commentStore.replyToWho
+        commentStore.replyToWho,
+        commentStore.replyToId
       );
       ElMessage.success(res.message);
+      emit("commentPosted", res.data);
     } else {
+      console.log(orignuid.value);
+
       const res = await postComment(
         route.query.vid,
         store.id,
         comment.value,
-        store.uname
+        store.uname,
+        null,
+        null,
+        null,
+        orignuid.value
       );
       ElMessage.success(res.message);
       commentStore.comments.unshift(res.data);

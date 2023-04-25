@@ -10,6 +10,7 @@ export const useUserStore = defineStore({
     id: 0,
     uname: "未登录",
     followArr: [],
+    socket: null,
   }),
   actions: {
     setUser(avatar, id, uname, isLoggedIn, arr) {

@@ -11,6 +11,8 @@ export const useCommentStore = defineStore({
     parrentId: "",
     uname: "",
     replyToWho: "",
+    replyComment: {},
+    replyToId: "",
   }),
 
   actions: {
@@ -24,6 +26,7 @@ export const useCommentStore = defineStore({
       this.parrentId = "";
       this.uname = "";
       this.replyToWho = "";
+      this.replyToId = "";
     },
   },
 });

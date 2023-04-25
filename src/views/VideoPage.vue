@@ -5,7 +5,7 @@
       <VideoPlayer :data="data"></VideoPlayer>
       <VideoReact></VideoReact>
       <VideoDesc :data="data"></VideoDesc>
-      <VideoComment></VideoComment>
+      <VideoComment :data="data"></VideoComment>
       <Transition name="fade">
         <div class="fixed-input" v-if="show">
           <VideoCommentInput :type="type"></VideoCommentInput>

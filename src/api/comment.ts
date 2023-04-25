@@ -6,9 +6,12 @@ export function postComment(
   user_name,
   parent_id = null,
   reply_comment_id = null,
-  replyToWho = null
+  replyToWho = null,
+  reply_to_id = null
 ) {
-  const requestData = { video_id, user_id, content, user_name };
+  const requestData = { video_id, user_id, content, user_name, reply_to_id };
+  console.log(requestData);
+
   if (parent_id) {
     requestData.parent_id = parent_id;
   }
@@ -18,8 +21,6 @@ export function postComment(
   if (replyToWho) {
     requestData.replyToWho = replyToWho;
   }
-  console.log(requestData);
-
   return request.post(`/comment/postComment`, requestData).then((res) => {
     return res.data;
   });
@@ -31,6 +32,11 @@ export function getComment(id) {
 }
 export function getReply(id) {
   return request.get(`/comment/getReply/${id}`).then((res) => {
+    return res.data.data;
+  });
+}
+export function getByCommentId(id) {
+  return request.get(`/comment/getByCommentId/${id}`).then((res) => {
     return res.data.data;
   });
 }

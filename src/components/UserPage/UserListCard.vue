@@ -103,6 +103,7 @@ async function getData(uid) {
 async function gotoSpace() {
   if (data.id) {
     await router.push(`/user/${data.id}/main`);
+    location.reload();
   }
 }
 
