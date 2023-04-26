@@ -11,6 +11,7 @@
       <VideoCommentItem
         v-for="item in commentStore.comments"
         :item="item"
+        :key="item.comment_id"
         :currentActiveComment="currentActiveComment"
         @setActiveComment="setActiveComment"
       ></VideoCommentItem>

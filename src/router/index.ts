@@ -48,6 +48,11 @@ const router = createRouter({
       component: () => import("../views/UserManagePage.vue"),
     },
     {
+      path: "/active",
+      name: "active",
+      component: () => import("../views/ActivePage.vue"),
+    },
+    {
       path: "/v/:query",
       name: "v",
       component: () => import("../views/VideoPartPage.vue"),
@@ -65,6 +70,11 @@ const router = createRouter({
           path: "main",
           name: "userMain",
           component: () => import("../views/UserPage/UserMainPage.vue"),
+        },
+        {
+          path: "active",
+          name: "userActive",
+          component: () => import("../views/UserPage/UserActivePage.vue"),
         },
         {
           path: "follow",

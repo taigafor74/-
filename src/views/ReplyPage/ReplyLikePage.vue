@@ -18,7 +18,7 @@ const data = ref([]);
 const store = useUserStore();
 onMounted(async () => {
   if (store.isLoggedIn) {
-    data.value = await getNotice(store.id, "like");
+    data.value = await getNotice(store.id, "videolike");
   }
 });
 </script>

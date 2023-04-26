@@ -3,7 +3,7 @@
     <div class="video-left-container">
       <VideoTitle :data="data"></VideoTitle>
       <VideoPlayer :data="data"></VideoPlayer>
-      <VideoReact></VideoReact>
+      <VideoReact :data="data"></VideoReact>
       <VideoDesc :data="data"></VideoDesc>
       <VideoComment :data="data"></VideoComment>
       <Transition name="fade">

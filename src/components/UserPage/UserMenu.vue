@@ -106,7 +106,7 @@ const userMenuArr: userMenu[] = reactive([
     title: "动态",
     iconSrc: "../../assets/icon/铃铛.png",
     index: 1,
-    routerPath: "userMain",
+    routerPath: "userActive",
   },
   {
     title: "投稿",

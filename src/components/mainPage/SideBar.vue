@@ -7,7 +7,7 @@
         </div>
         <div class="sidebar-list-item-intro">首页</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoActive">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -408,6 +408,9 @@ function goto(path) {
     });
   }
 }
+const gotoActive = (path) => {
+  router.push("active");
+};
 </script>
 
 <style lang="scss" scoped>

@@ -34,6 +34,8 @@ const img = ref("");
 const title = ref("");
 onMounted(async () => {
   data.value = await getLike(props.item?.target_id);
+  console.log(data.value);
+
   uname.value = data.value[0].uname;
   img.value = `http://localhost:3000/avatar/${data.value[0].avatar}`;
   title.value = data.value[0].title;
