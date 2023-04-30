@@ -5,6 +5,7 @@ export const useVideoStore = defineStore({
 
   state: () => ({
     isFixed: false,
+    isFullScreen: false,
   }),
 
   actions: {

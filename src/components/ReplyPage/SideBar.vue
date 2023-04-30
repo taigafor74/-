@@ -20,7 +20,7 @@
         </el-menu-item>
         <el-menu-item index="3">
           <el-icon><setting /></el-icon>
-          <span>Navigator 3</span>
+          <span>系统通知</span>
         </el-menu-item>
       </el-menu>
     </el-col>

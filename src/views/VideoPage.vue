@@ -12,7 +12,7 @@
         </div>
       </Transition>
     </div>
-    <div class="video-right-container">
+    <div class="video-right-container" v-if="!videoStore.isFullScreen">
       <VideoRight :data="data"></VideoRight>
     </div>
   </div>

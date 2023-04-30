@@ -7,6 +7,9 @@
     <div class="video-box">
       <video ref="videoPlayer" loop="true" @click="toggleVideo"></video>
       <div class="danmaku" ref="danmakuCon" @click="maskDanmaku"></div>
+      <!-- <div class="mini-video-container" v-show="isSmall">
+        <video ref="miniVideo" controls></video>
+      </div> -->
     </div>
     <div class="video-box-bottom">
       <div class="setting-con" v-if="showSetting">
@@ -93,10 +96,10 @@
             />
           </div>
           <div class="icon window">
-            <img src="@/assets/icon/小窗口.png" @click="fullscrean" />
+            <img src="@/assets/icon/小窗口.png" @click="openPictureInPicture" />
           </div>
           <div class="icon browserfull">
-            <img src="@/assets/icon/网页全屏.png" @click="fullscrean" />
+            <img src="@/assets/icon/网页全屏.png" @click="browserFull" />
           </div>
           <div class="icon fullscrean">
             <img src="@/assets/icon/全屏.png" @click="fullscrean" />
@@ -165,22 +168,41 @@
           <div class="danmaku-setting-box"></div>
         </div>
         <div class="danmaku-send">
-          <div class="color-set">
-            <span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xml:space="preserve"
-                data-pointer="none"
-                style="enable-background: new 0 0 22 22"
-                viewBox="0 0 22 22"
-              >
-                <path
-                  fill="white"
-                  d="M17 16H5c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zM6.96 15c.39 0 .74-.24.89-.6l.65-1.6h5l.66 1.6c.15.36.5.6.89.6.69 0 1.15-.71.88-1.34l-3.88-8.97C11.87 4.27 11.46 4 11 4s-.87.27-1.05.69l-3.88 8.97c-.27.63.2 1.34.89 1.34zM11 5.98 12.87 11H9.13L11 5.98z"
-                ></path>
-              </svg>
-            </span>
-          </div>
+          <el-popover placement="top" :width="170" trigger="click">
+            <template #reference>
+              <div class="color-set">
+                <span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xml:space="preserve"
+                    data-pointer="none"
+                    style="enable-background: new 0 0 22 22"
+                    viewBox="0 0 22 22"
+                  >
+                    <path
+                      fill="white"
+                      d="M17 16H5c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1zM6.96 15c.39 0 .74-.24.89-.6l.65-1.6h5l.66 1.6c.15.36.5.6.89.6.69 0 1.15-.71.88-1.34l-3.88-8.97C11.87 4.27 11.46 4 11 4s-.87.27-1.05.69l-3.88 8.97c-.27.63.2 1.34.89 1.34zM11 5.98 12.87 11H9.13L11 5.98z"
+                    ></path>
+                  </svg>
+                </span>
+              </div>
+            </template>
+            <div class="danmanku_type_set">
+              <div class="top">
+                <el-radio-group v-model="radio1" size="small">
+                  <el-radio-button label="顶部" />
+                  <el-radio-button label="滚动" />
+                  <el-radio-button label="底部" />
+                </el-radio-group>
+              </div>
+              <div class="bottom">
+                <div class="demo-color-block">
+                  <span class="demonstration">选择弹幕颜色</span>
+                  <el-color-picker v-model="color1" />
+                </div>
+              </div>
+            </div>
+          </el-popover>
           <input
             placeholder="发个弹幕吧"
             type="text"
@@ -209,6 +231,8 @@ import { getVideo } from "@/api/mainPage";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { setWatch } from "@/api/watch";
+import { useVideoStore } from "@/stores/VideoStore";
+const videoStore = useVideoStore();
 const store = useUserStore();
 const videoPlayer = ref();
 const menuItem1 = ref();
@@ -220,12 +244,17 @@ const nowBar = ref();
 const preloadBar = ref();
 const totalTime = ref();
 const nowTime = ref();
+const isSmall = ref(false);
 const playImg = ref();
 const settingBmenu = ref();
+const radio1 = ref("滚动");
 const playerRateBox = ref();
 const danmakuCon = ref();
 const userInput = ref();
+const color1 = ref("#ffffff");
 const isShowDanmaku = ref(true);
+const isMiniPlayer = ref(false);
+const miniVideo = ref(null);
 let timer: any = null;
 let showSetting = ref(false);
 let loadedFragments: any = [];
@@ -323,15 +352,14 @@ const danmakuPool = {
     this.pool.push(danmaku);
   },
 };
-onMounted(() => {
-  watchEffect(() => {
-    if (props.data && props.data.path) {
-      src.value = `http://localhost:3000/videos/${props.data.path}/720p/${props.data.path}_720p.m3u8`;
-      setInfo(src.value);
-      danmakuPool.init();
-    }
-  });
+watchEffect(() => {
+  if (props.data && props.data.path) {
+    src.value = `http://localhost:3000/videos/${props.data.path}/720p/${props.data.path}_720p.m3u8`;
+    setInfo(src.value, videoPlayer.value);
+    danmakuPool.init();
+  }
 });
+onMounted(() => {});
 onUnmounted(() => {
   clearAll();
   hls.destroy();
@@ -346,6 +374,12 @@ onBeforeUnmount(async () => {
   }
   return;
 });
+function openPictureInPicture() {
+  videoPlayer.value.requestPictureInPicture();
+}
+function browserFull() {
+  videoStore.isFullScreen = !videoStore.isFullScreen;
+}
 function sendDanmaku() {
   userInput.value.value = "";
   danmakuArr.push({
@@ -462,16 +496,16 @@ function setTime() {
     }`;
   }
 }
-function loadVideoSource(src: any, currentTime?: number) {
+function loadVideoSource(src: any, vp, currentTime?: number) {
   if (hls) {
     hls.destroy();
   }
   hls = new Hls();
   hls.loadSource(src);
-  hls.attachMedia(videoPlayer.value);
+  hls.attachMedia(vp);
   hls.on(Hls.Events.MANIFEST_PARSED, () => {
     if (currentTime !== undefined) {
-      videoPlayer.value.currentTime = currentTime;
+      vp.currentTime = currentTime;
     }
   });
   hls.on(Hls.Events.FRAG_LOADED, (event: any, data: any) => {
@@ -566,9 +600,9 @@ function updatePreloadProgress(loadedFragments: any, totalFragments: any) {
   const preload = preloadBar.value;
   setProgress(loadedFragments, totalFragments, pconWidth, preload);
 }
-function setInfo(src: any) {
+function setInfo(src: any, vp) {
   if (Hls.isSupported()) {
-    loadVideoSource(src);
+    loadVideoSource(src, vp);
     videoPlayer.value.volume = 0.5;
     hls.on(Hls.Events.ERROR, (event: any, data: any) => {
       console.error("Error event:", event, "Data:", data);
@@ -636,6 +670,37 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
+.mini-video-container {
+  position: fixed;
+  bottom: 19px;
+  right: 13px;
+  border-radius: 5px;
+  width: 362px;
+  height: 200px;
+  border: 1px solid #ccc;
+  background-color: #000;
+  z-index: 999000;
+  overflow: hidden;
+  video {
+    width: 300px;
+    height: 169px;
+  }
+}
+
+.danmanku_type_set {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .top {
+    margin-bottom: 20px;
+  }
+  .bottom {
+    .demonstration {
+      margin-right: 10px;
+    }
+  }
+}
 .player-container {
   user-select: none;
   position: relative;

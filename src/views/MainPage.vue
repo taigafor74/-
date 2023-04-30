@@ -8,9 +8,9 @@
       <div class="top-select-card-left hot">
         <img src="@/assets/icon/热门.png" />热门
       </div>
-      <div class="top-select-card-left channel">
+      <!-- <div class="top-select-card-left channel">
         <img src="@/assets/icon/融合频道.png" />频道
-      </div>
+      </div> -->
       <div class="top-select-card-middle"></div>
       <div class="top-select-card-right">
         <button v-for="item in btnArr" @click="goto(item.query)">
@@ -19,6 +19,14 @@
       </div>
     </div>
     <div class="video-part">
+      <div class="swiper">
+        <el-carousel indicator-position="outside">
+          <el-carousel-item v-for="item in swiper" :key="item">
+            <img :src="item.img" />
+            <div class="swiper-title">{{ item.title }}</div>
+          </el-carousel-item>
+        </el-carousel>
+      </div>
       <VideoCard v-for="item in data" :key="item.id" :item="item"></VideoCard>
       <div
         class="skeleton-video-card"
@@ -95,6 +103,7 @@ const store = useMainStore();
 const router = useRouter();
 const route = useRoute();
 const data = ref([]);
+const swiper = ref([]);
 const noMoreData = ref(false);
 const dataLoaded = computed(() => {
   return store.dataLoaded;
@@ -108,6 +117,11 @@ async function loadVideos() {
   const videos = await getVideoList(currentPage, loadCount);
   store.hideSkeleton();
   data.value.push(...videos);
+  // swiper.value.push(...videos.splice(10, 5));
+  // swiper.value.forEach((item) => {
+  //   item.img = `http://localhost:3000/videoImg/${item.img}`;
+  // });
+
   currentPage++;
   if (videos.length < loadCount) {
     noMoreData.value = true;
@@ -248,12 +262,27 @@ const goto = (query) => {
     }
   }
   .video-part {
-    margin-top: 3.686585vw;
+    margin-top: 62px;
     overflow-y: auto;
     padding: 0.292912vw;
     padding-bottom: 1vw;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    .swiper {
+      position: relative;
+      grid-column: 1 / span 2;
+      .swiper-title {
+        position: absolute;
+        bottom: 0;
+        color: purple;
+      }
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+    }
   }
 }
 </style>

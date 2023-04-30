@@ -45,3 +45,8 @@ export function updateFollow(store, followed, boolean) {
     );
   }
 }
+export function getSevenFollowers(id) {
+  return request.get(`/user/getSevenFollowers/${id}`).then((res) => {
+    return res.data.data;
+  });
+}

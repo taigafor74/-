@@ -10,7 +10,7 @@
       </div>
       <div class="bottom">
         <img :src="imgPath" />
-        <div class="title">喜欢的影片</div>
+        <div class="title">观看历史</div>
         <div class="info">
           <div class="wrap">
             <div class="name">{{ uname }}</div>

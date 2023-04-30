@@ -3,12 +3,14 @@
     <UserHeader :userInfo="userInfo" />
     <UserMenu :userInfo="userInfo" />
     <div class="user-page-mt"><RouterView></RouterView></div>
+    <DataView></DataView>
   </div>
 </template>
 
 <script setup lang="ts">
 import UserHeader from "@/components/UserPage/UserHeader.vue";
 import UserMenu from "@/components/UserPage/UserMenu.vue";
+import DataView from "@/components/UserManage/DataView.vue";
 import { getUserInfo } from "@/api/user";
 import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";

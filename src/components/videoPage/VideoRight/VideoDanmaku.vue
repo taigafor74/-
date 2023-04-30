@@ -30,12 +30,12 @@
           </div>
           <div class="list">
             <ul>
-              <li v-for="item in 80">
-                <div class="time">00:00</div>
+              <li v-for="item in data">
+                <div class="time">{{ formatTimeStmap(item.timestamp) }}</div>
                 <div class="content">
-                  弹幕内容弹幕内容弹幕内容弹幕内容弹幕内容弹幕内容弹幕内容
+                  {{ item.content }}
                 </div>
-                <div class="sendtime">04-04 10:41</div>
+                <div class="sendtime">{{ timeAgo(item.create_time) }}</div>
               </li>
             </ul>
           </div>
@@ -46,9 +46,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, watchEffect } from "vue";
+import { useRoute } from "vue-router";
+import { geDanmakuByvid } from "@/api/danmaku";
+import { timeAgo } from "@/utils/getTime";
 const arrow: any = ref(null);
 const show = ref(false);
+const route = useRoute();
+const data = ref([]);
+const formatTimeStmap = (timestamp: any) => {
+  //formate video time stamp
+  //hh:mm:ss
+  let hour = Math.floor(timestamp / 3600);
+  let minute = Math.floor((timestamp - hour * 3600) / 60);
+  let second = timestamp - hour * 3600 - minute * 60;
+  let hourStr = hour < 10 ? "0" + hour : hour;
+  let minuteStr = minute < 10 ? "0" + minute : minute;
+  let secondStr = second < 10 ? "0" + second : second;
+  //secondStr保留1位小数
+  secondStr = Math.floor(secondStr);
+  return hourStr + ":" + minuteStr + ":" + secondStr;
+};
+onMounted(async () => {
+  console.log(route.query.vid);
+  data.value = await geDanmakuByvid(route.query.vid);
+  console.log(data.value);
+});
 function toggle() {
   show.value = !show.value;
   if (show.value) {
@@ -109,7 +132,7 @@ function toggle() {
         .time {
           padding-right: 0;
           text-align: left;
-          width: 60px;
+          width: 70px;
           cursor: pointer;
           display: inline-block;
           font-size: 12px;
@@ -148,7 +171,7 @@ function toggle() {
             .time {
               padding-right: 0;
               text-align: left;
-              width: 60px;
+              width: 70px;
               cursor: pointer;
               display: inline-block;
               font-size: 12px;

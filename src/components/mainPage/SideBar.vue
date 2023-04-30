@@ -83,7 +83,7 @@
             </g>
           </svg>
         </div>
-        <div class="sidebar-list-item-intro">你的影片</div>
+        <div class="sidebar-list-item-intro">我的影片</div>
       </div>
       <div class="sidebar-list-item" @click="goto(true)">
         <div class="sidebar-list-item-img-box">
@@ -108,7 +108,7 @@
             </g>
           </svg>
         </div>
-        <div class="sidebar-list-item-intro">稍后观看</div>
+        <div class="sidebar-list-item-intro">我的收藏</div>
       </div>
       <div class="sidebar-list-item" @click="goto(true)">
         <div class="sidebar-list-item-img-box">
