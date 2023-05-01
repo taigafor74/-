@@ -33,3 +33,13 @@ export function getActiveLike(id) {
     return res.data.data;
   });
 }
+export function getCountLikes(id, type) {
+  return request.get(`/likes/getLikesChart/${type}/${id}`).then((res) => {
+    return res.data.data;
+  });
+}
+export function getTotalLikes(id) {
+  return request.get(`/likes/getTotalLikes/${id}`).then((res) => {
+    return res.data.data;
+  });
+}

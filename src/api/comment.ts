@@ -40,3 +40,13 @@ export function getByCommentId(id) {
     return res.data.data;
   });
 }
+export function getCommentsChart(id, type) {
+  return request.get(`/comment/getCommentsChart/${type}/${id}`).then((res) => {
+    return res.data.data;
+  });
+}
+export function getTotalComment(id) {
+  return request.get(`/comment/getTotalComment/${id}`).then((res) => {
+    return res.data.data;
+  });
+}

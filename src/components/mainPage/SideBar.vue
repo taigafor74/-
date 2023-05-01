@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar-container">
     <div class="sidebar-list-card">
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotomain">
         <div class="sidebar-list-item-img-box">
           <img src="@/assets/icon/融合频道.png" />
         </div>
@@ -35,7 +35,7 @@
     </div>
 
     <div class="sidebar-list-card">
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoPlayList(watch)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -85,7 +85,7 @@
         </div>
         <div class="sidebar-list-item-intro">我的影片</div>
       </div>
-      <div class="sidebar-list-item" @click="goto(true)">
+      <div class="sidebar-list-item" @click="gotoPlayList(collect)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -110,7 +110,7 @@
         </div>
         <div class="sidebar-list-item-intro">我的收藏</div>
       </div>
-      <div class="sidebar-list-item" @click="goto(true)">
+      <div class="sidebar-list-item" @click="gotoPlayList(like)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -139,7 +139,7 @@
 
     <div class="sidebar-list-card">
       <label>探索发现</label>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoarea(music)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -164,7 +164,7 @@
         </div>
         <div class="sidebar-list-item-intro">热门影片</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoarea(music)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -189,7 +189,7 @@
         </div>
         <div class="sidebar-list-item-intro">音乐</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoarea(animation)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -212,9 +212,9 @@
             </g>
           </svg>
         </div>
-        <div class="sidebar-list-item-intro">影视</div>
+        <div class="sidebar-list-item-intro">番剧</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoarea(game)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -239,7 +239,7 @@
         </div>
         <div class="sidebar-list-item-intro">游戏</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoarea(life)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -262,9 +262,9 @@
             </g>
           </svg>
         </div>
-        <div class="sidebar-list-item-intro">体育</div>
+        <div class="sidebar-list-item-intro">生活</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <div class="sidebar-list-item" @click="gotoarea(fashion)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -398,18 +398,69 @@
 
 <script setup lang="ts">
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { ElMessage } from "element-plus";
+const store = useUserStore();
+const watch = "watch";
+const like = "like";
+const collect = "collect";
+const music = "music";
+const animation = "animation";
+const game = "game";
+const life = "life";
+const fashion = "fashion";
 const router = useRouter();
-function goto(path) {
-  if (path == true) {
-    router.push("/playlist");
+async function gotoPlayList(query) {
+  if (store.isLoggedIn) {
+    await router.push({
+      path: `/playlist`,
+      query: {
+        query,
+      },
+    });
+    location.reload();
   } else {
-    router.push({
-      path: `/user/${1}/main`,
+    ElMessage({
+      message: "请先登录",
+      type: "warning",
+    });
+  }
+}
+const gotomain = () => {
+  router.push({
+    path: `/main`,
+  });
+};
+const gotoarea = (query) => {
+  router.push({
+    path: `/v/${query}`,
+    query: {
+      query,
+    },
+  });
+};
+async function goto() {
+  if (store.isLoggedIn) {
+    await router.push({
+      path: `/user/${store.id}/main`,
+    });
+    location.reload();
+  } else {
+    ElMessage({
+      message: "请先登录",
+      type: "warning",
     });
   }
 }
 const gotoActive = (path) => {
-  router.push("active");
+  if (store.isLoggedIn) {
+    router.push("/active");
+  } else {
+    ElMessage({
+      message: "请先登录",
+      type: "warning",
+    });
+  }
 };
 </script>
 

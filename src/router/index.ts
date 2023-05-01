@@ -58,6 +58,23 @@ const router = createRouter({
       component: () => import("../views/VideoPartPage.vue"),
     },
     {
+      path: "/search/:keyword",
+      name: "search",
+      component: () => import("../views/SearchPage/SearchPage.vue"),
+      children: [
+        {
+          path: "video",
+          name: "searchVideo",
+          component: () => import("../views/SearchPage/SearchVideo.vue"),
+        },
+        {
+          path: "user",
+          name: "searchUser",
+          component: () => import("../views/SearchPage/SearchUser.vue"),
+        },
+      ],
+    },
+    {
       path: "/user/:id",
       component: () => import("../views/UserPage/UserPage.vue"),
       children: [
@@ -130,6 +147,7 @@ router.beforeEach(async (to, from, next) => {
   }
 
   // 继续导航
+  window.scrollTo(0, 0);
   next();
 });
 export default router;

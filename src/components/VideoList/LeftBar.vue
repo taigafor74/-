@@ -10,7 +10,7 @@
       </div>
       <div class="bottom">
         <img :src="imgPath" />
-        <div class="title">观看历史</div>
+        <div class="title">{{ title }}</div>
         <div class="info">
           <div class="wrap">
             <div class="name">{{ uname }}</div>
@@ -26,6 +26,7 @@
             :icon="CaretRight"
             round
             size="large"
+            @click="play"
             >播放</el-button
           >
         </div>
@@ -43,11 +44,13 @@ import { defineProps, watchEffect } from "vue";
 import { useMainStore } from "@/stores/main";
 import { timeAgo } from "@/utils/getTime";
 import { useUserStore } from "@/stores/user";
+const router = useRouter();
 const store = useUserStore();
 const mainStore = useMainStore();
 const imgPath = ref("");
 const uname = ref("");
 const length = ref(0);
+const title = ref("我的收藏");
 const props = defineProps({
   item: {
     type: Object,
@@ -57,6 +60,13 @@ const props = defineProps({
 const colors = ref({});
 watchEffect(async () => {
   if (props.item.length > 0) {
+    console.log(props.item);
+    if (props.item[0].max_date) {
+      title.value = "观看历史";
+    }
+    if (props.item[0].like_id) {
+      title.value = "喜欢的影片";
+    }
     const item = props.item[0];
     imgPath.value = `http://localhost:3000/videoImg/${item.img}`;
     const result = await getColorsFromImage(imgPath.value);
@@ -65,7 +75,21 @@ watchEffect(async () => {
     length.value = props.item.length;
   }
 });
-
+const play = () => {
+  const item = props.item;
+  const arr = [];
+  item.forEach((item) => {
+    arr.push(item.vid);
+  });
+  router.push({
+    name: "video",
+    path: "/video",
+    query: {
+      vid: props.item[0].vid,
+      arr,
+    },
+  });
+};
 const backgroundStyle = computed(() => {
   if (colors.value.vibrantColor && colors.value.mutedColor) {
     const vibrantColor = `rgba(${colors.value.brightestColor.join(",")}, 0.8)`;

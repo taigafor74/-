@@ -20,9 +20,13 @@
     </div>
     <div class="video-part">
       <div class="swiper">
-        <el-carousel indicator-position="outside">
-          <el-carousel-item v-for="item in swiper" :key="item">
-            <img :src="item.img" />
+        <el-carousel indicator-position="outside" height="600px">
+          <el-carousel-item
+            v-for="item in swiper"
+            :key="item"
+            @click="gotoVideo(item.vid)"
+          >
+            <img :src="baseUrl + item.img" />
             <div class="swiper-title">{{ item.title }}</div>
           </el-carousel-item>
         </el-carousel>
@@ -90,6 +94,7 @@ import SideBar from "@/components/mainPage/SideBar.vue";
 import VideoCard from "@/components/mainPage/VideoCard.vue";
 import { getVideoList } from "@/api/mainPage";
 import { useMainStore } from "@/stores/main";
+import { getSettingVideo } from "@/api/setting";
 import {
   ref,
   watch,
@@ -104,17 +109,27 @@ const router = useRouter();
 const route = useRoute();
 const data = ref([]);
 const swiper = ref([]);
+const baseUrl = "http://localhost:3000/videoImg/";
 const noMoreData = ref(false);
 const dataLoaded = computed(() => {
   return store.dataLoaded;
 });
+const gotoVideo = (vid) => {
+  router.push({
+    path: "/video",
+    query: {
+      vid,
+    },
+  });
+};
 const displayedVideos = ref([]);
 let currentPage = 1;
 const loadCount = 20;
 const skeletonCount = ref(loadCount);
-
 async function loadVideos() {
   const videos = await getVideoList(currentPage, loadCount);
+  swiper.value = await getSettingVideo();
+
   store.hideSkeleton();
   data.value.push(...videos);
   // swiper.value.push(...videos.splice(10, 5));
@@ -218,6 +233,7 @@ const goto = (query) => {
     padding: 14px 13px;
     font-size: 14px;
     position: fixed;
+    z-index: 30;
     background: #0f0f0f;
     .top-select-card-left {
       cursor: pointer;
@@ -272,15 +288,22 @@ const goto = (query) => {
     .swiper {
       position: relative;
       grid-column: 1 / span 2;
+      grid-row: 1 / span 2;
+      cursor: pointer;
       .swiper-title {
-        position: absolute;
-        bottom: 0;
+        // position: absolute;
+        // top: 0;
+        // left: 50%;
+        // transform: translateX(-50%);
+        width: 100%;
+        font-size: 32px;
         color: purple;
       }
       img {
+        border-radius: 10px;
         width: 100%;
-        height: 100%;
-        object-fit: contain;
+        height: 84%;
+        object-fit: cover;
       }
     }
   }

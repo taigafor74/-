@@ -45,8 +45,8 @@ export function updateFollow(store, followed, boolean) {
     );
   }
 }
-export function getSevenFollowers(id) {
-  return request.get(`/user/getSevenFollowers/${id}`).then((res) => {
+export function getCountFollowers(id, type) {
+  return request.get(`/user/getCountFollowers/${type}/${id}`).then((res) => {
     return res.data.data;
   });
 }

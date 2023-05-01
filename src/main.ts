@@ -9,7 +9,12 @@ import "element-plus/theme-chalk/dark/css-vars.css";
 
 import VueSocketIO from "vue-socket.io";
 import { registerSockets, destroySockets } from "./utils/sockets";
+
+import echarts from "./echarts";
+
 const app = createApp(App);
+
+app.config.globalProperties.$echarts = echarts;
 // const socket = new VueSocketIO({
 //   debug: false, // debug调试，生产建议关闭
 //   connection: "http://localhost:3000",

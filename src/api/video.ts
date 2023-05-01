@@ -9,3 +9,8 @@ export function getVideoAllByUser(id) {
     return res.data;
   });
 }
+export function getVideoByArea(area) {
+  return request.get(`/videos/getVideoByArea/${area}`).then((res) => {
+    return res.data.data;
+  });
+}

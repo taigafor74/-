@@ -8,9 +8,6 @@
       <div class="top-select-card-left hot">
         <img src="@/assets/icon/热门.png" />热门
       </div>
-      <div class="top-select-card-left channel">
-        <img src="@/assets/icon/融合频道.png" />频道
-      </div>
       <div class="top-select-card-middle"></div>
       <div class="top-select-card-right">
         <button v-for="item in btnArr" @click="goto(item.query)">
@@ -27,13 +24,13 @@
       </el-carousel>
     </div>
     <div class="video-part">
-      <VideoCard v-for="item in data" :key="item.id" :item="item"></VideoCard>
+      <VideoCard v-for="item in data" :key="item.vid" :item="item"></VideoCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watchEffect } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import VideoCard from "@/components/mainPage/VideoCard.vue";
 const router = useRouter();
@@ -41,9 +38,19 @@ const route = useRoute();
 const name = ref("");
 name.value = btnName[route.query.query];
 import { getVideoList } from "@/api/mainPage";
+import { getVideoByArea } from "@/api/video";
 const data = ref([]);
 onMounted(async () => {
-  data.value = await getVideoList();
+  const result = btnArr.find((item) => item.query == route.query.query);
+  console.log(result.name);
+  data.value = await getVideoByArea(result.name);
+});
+watchEffect(async () => {
+  if (route.query.query) {
+    const result = btnArr.find((item) => item.query == route.query.query);
+    name.value = btnName[route.query.query];
+    data.value = await getVideoByArea(result.name);
+  }
 });
 enum btnName {
   game = "游戏",
@@ -72,10 +79,6 @@ const goto = (query) => {
       query,
     },
   });
-  updateName(query);
-};
-const updateName = (query) => {
-  name.value = btnName[query];
 };
 </script>
 
@@ -167,9 +170,8 @@ const updateName = (query) => {
     overflow-y: auto;
     padding: 5px;
     padding-bottom: 17px;
-    flex-wrap: wrap;
-    display: flex;
-    justify-content: space-around;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 </style>

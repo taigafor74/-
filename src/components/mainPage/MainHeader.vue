@@ -24,8 +24,13 @@
     </div>
     <div class="main-header-middle">
       <div class="header-input-box">
-        <input class="main-header-input" type="text" placeholder="搜索" />
-        <div class="img-box">
+        <input
+          class="main-header-input"
+          type="text"
+          placeholder="搜索"
+          v-model="keyword"
+        />
+        <div class="img-box" @click="goSearch">
           <img src="@/assets/icon/搜索.png" />
         </div>
       </div>
@@ -77,11 +82,18 @@ import { useMainStore } from "@/stores/main";
 import { useUserStore } from "@/stores/user";
 import { showLogin } from "@/stores/counter";
 import { useSocketStore } from "@/stores/socket";
+const keyword = ref("");
 const useSocket = useSocketStore();
 const showLoginState = showLogin();
 const userStore = useUserStore();
 const store = useMainStore();
 const data = ref([]);
+const goSearch = async () => {
+  await router.push({
+    path: `/search/${keyword.value}/video`,
+  });
+  location.reload();
+};
 const gotoReply = () => {
   router.push({
     name: "replyLike",
@@ -157,6 +169,7 @@ function showSelectBoxOnHover() {
       }
     }
     .img-box {
+      cursor: pointer;
       margin-right: 0.275747vw;
       width: 2vw;
       height: 2vw;
@@ -196,6 +209,7 @@ function showSelectBoxOnHover() {
         }
       }
       .img-box {
+        cursor: pointer;
         height: 100%;
         background-color: rgb(35, 34, 34);
         display: flex;

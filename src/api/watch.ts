@@ -9,3 +9,13 @@ export function getWatch(id) {
     return res.data;
   });
 }
+export function getWatchChart(id, type) {
+  return request.get(`/watch/getWatchChart/${type}/${id}`).then((res) => {
+    return res.data.data;
+  });
+}
+export function getTotalWatch(id) {
+  return request.get(`/watch/getTotalWatch/${id}`).then((res) => {
+    return res.data.data;
+  });
+}

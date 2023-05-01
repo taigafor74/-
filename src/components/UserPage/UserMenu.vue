@@ -30,11 +30,11 @@
       </div>
       <div class="user-menu-data">
         <span>获赞数</span>
-        <span>11119</span>
+        <span>{{ likecount }}</span>
       </div>
       <div class="user-menu-data">
         <span>播放数</span>
-        <span>6379</span>
+        <span>{{ watchcount }}</span>
       </div>
     </div>
   </div>
@@ -44,6 +44,10 @@
 import { ref, reactive, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { getFans, getFollows } from "@/api/follow";
+import { getTotalLikes } from "@/api/like";
+import { getTotalWatch } from "@/api/watch";
+const likecount = ref(0);
+const watchcount = ref(0);
 type userMenu = {
   title: string;
   iconSrc: any;
@@ -66,6 +70,8 @@ const cursor = ref<HTMLElement | any>(null);
 let currentIndex: any = enumIndex[route.path as any];
 let userMenuLeftItem = ref<HTMLElement | any>(null);
 async function getData() {
+  likecount.value = await getTotalLikes(route.params.id);
+  watchcount.value = await getTotalWatch(route.params.id);
   const fansRes = await getFans(route.params.id);
   const followRes = await getFollows(route.params.id);
   follow.value = followRes.length;

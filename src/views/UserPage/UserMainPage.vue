@@ -47,6 +47,7 @@ onMounted(() => {
   display: flex;
   //以下的为测试代码
   .test-main {
+    flex: 1;
     background-color: rgb(18, 18, 18);
   }
   .sidebar {

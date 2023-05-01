@@ -1,13 +1,21 @@
 <template>
   <div class="DataView-con">
     <div class="header">
-      <div class="header-title">超级管理员数据统计</div>
-      <div>时间选择</div>
+      <div class="header-title">核心数据统计</div>
+      <div style="width: 200px">
+        <el-form-item label="时间选择">
+          <el-select v-model="chartStore.time" width="20px">
+            <el-option label="昨日" value="昨日" />
+            <el-option label="近七天" value="近七天" />
+            <el-option label="历史累计" value="历史累计" />
+          </el-select>
+        </el-form-item>
+      </div>
     </div>
     <div class="card-con">
       <div
         class="card"
-        v-for="item in cardList"
+        v-for="item in chartStore.item"
         :key="item.index"
         ref="refList"
         @click="chooseCard(item.index)"
@@ -27,19 +35,19 @@
 
 <script setup lang="ts">
 import ChartTest from "./ChartTest.vue";
-import { ref, onMounted } from "vue";
-const cardList = ref([
-  { name: "新增用户", index: 1, num: 14 },
-  { name: "新增视频数量", index: 2, num: 32 },
-  { name: "新增视频评论数量", index: 3, num: 88 },
-  { name: "新增视频收藏数量", index: 4, num: 42 },
-  { name: "新增通知数量", index: 5, num: 31 },
-]);
-const refList = ref([]);
-onMounted(() => {
-  console.log(refList.value);
+import { ref, onMounted, watchEffect, reactive } from "vue";
+import { useChartStore } from "@/stores/userchart";
+import { useUserStore } from "@/stores/user";
+import { getCountFollowers } from "@/api/follow";
+const chartStore = useChartStore();
+const store = useUserStore();
+const data = ref(null);
+onMounted(async () => {
+  chooseCard(1);
 });
+const refList = ref([]);
 const chooseCard = (index) => {
+  chartStore.currentIndex = index;
   refList.value.forEach((item: any) => {
     item.style.backgroundColor = "#000000";
   });

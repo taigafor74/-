@@ -2,62 +2,130 @@
   <div>
     <div class="chart-con">
       <div class="header">
-        <div class="name">七日新增用户数据</div>
+        <div class="name">{{ chartStore.time }}新增用户数据</div>
         <div class="export">导出数据</div>
       </div>
-      <div ref="chartRef" style="width: 100%; height: 100%"></div>
+      <div ref="chartRef" style="width: 100%; height: 100%" id="main"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount, watch } from "vue";
+import { ref, onBeforeMount, watch, onMounted, defineProps } from "vue";
 import * as echarts from "echarts";
 import { useUserStore } from "@/stores/user";
-import { getSevenFollowers } from "@/api/follow";
+import { useChartStore } from "@/stores/userchart";
+import { getCountFollowers } from "@/api/follow";
+import { getCountLikes, getTotalLikes } from "@/api/like";
+import { getWatchChart, getTotalWatch } from "@/api/watch";
+import { getCommentsChart, getTotalComment } from "@/api/comment";
+import { getCollectChart, getTotalCollect } from "@/api/collect";
+import { getFans } from "@/api/follow";
+const chartStore = useChartStore();
 const store = useUserStore();
-
-const chart = ref(null);
 const chartRef = ref(null);
-
-onBeforeMount(() => {
-  fetchData(store.id);
+const data = ref([]);
+let myChart = null;
+onMounted(async () => {
+  initALL();
 });
+const initALL = async () => {
+  myChart = echarts.init(chartRef.value);
+  const lengthArr = [];
+  let data1 = await getFans(store.id);
+  data1 = data1.length;
+  lengthArr.push(data1);
+  const data2 = await getTotalLikes(store.id);
+  lengthArr.push(data2);
+  const data3 = await getTotalComment(store.id);
+  lengthArr.push(data3);
+  const data4 = await getTotalCollect(store.id);
+  console.log(data4);
 
-watch(chartRef, () => {
-  if (chartRef.value) {
-    initChart();
+  lengthArr.push(data4);
+  const data5 = await getTotalWatch(store.id);
+  lengthArr.push(data5);
+  const arr = await fetchAll(store.id, chartStore.time);
+  arr.forEach((item, index) => {
+    chartStore.item[index].origin = lengthArr[index];
+  });
+  data.value = arr[0];
+  const data11 = arr[1];
+  const data22 = arr[2];
+  const data33 = arr[3];
+  const data44 = arr[4];
+  const key = Object.keys(data.value[0])[1];
+  const key11 = Object.keys(data11[0])[1];
+  const key22 = Object.keys(data22[0])[1];
+  const key33 = Object.keys(data33[0])[1];
+  const key44 = Object.keys(data44[0])[1];
+  chartStore.setUpdate(0, key, data.value, "昨日");
+  chartStore.setUpdate(1, key11, data11, "昨日");
+  chartStore.setUpdate(2, key22, data22, "昨日");
+  chartStore.setUpdate(3, key33, data33, "昨日");
+  chartStore.setUpdate(4, key44, data44, "昨日");
+  initChart(data.value);
+};
+const fetchAll = async (followedId, type) => {
+  const follow = await getCountFollowers(followedId, type);
+  const like = await getCountLikes(followedId, type);
+  const comment = await getCommentsChart(followedId, type);
+  const collect = await getCollectChart(followedId, type);
+  const watch = await getWatchChart(followedId, type);
+
+  return [follow, like, comment, collect, watch];
+};
+const fetchData = async (followedId: number, type) => {
+  try {
+    if (chartStore.currentIndex == 1) {
+      return await getCountFollowers(followedId, type);
+    } else if (chartStore.currentIndex == 2) {
+      return await getCountLikes(followedId, type);
+    } else if (chartStore.currentIndex == 3) {
+      return await getCommentsChart(followedId, type);
+    } else if (chartStore.currentIndex == 4) {
+      return await getCollectChart(followedId, type);
+    } else if (chartStore.currentIndex == 5) {
+      return await getWatchChart(followedId, type);
+    }
+  } catch (error) {}
+};
+watch(
+  () => chartStore.time,
+  async (newVal) => {
+    data.value = await fetchAll(store.id, newVal);
+    data.value.forEach((item, index) => {
+      const key = Object.keys(data.value[index][0])[1];
+      chartStore.setUpdate(index, key, data.value[index], newVal);
+    });
+    initChart(data.value[chartStore.currentIndex - 1]);
   }
-});
+);
+watch(
+  () => chartStore.currentIndex,
+  async (newVal) => {
+    data.value = await fetchData(store.id, chartStore.time);
+    const key = Object.keys(data.value[0])[1];
+    chartStore.setUpdate(
+      chartStore.currentIndex - 1,
+      key,
+      data.value,
+      chartStore.time
+    );
+    initChart(data.value);
+  }
+);
 const initChart = (data) => {
-  if (!chart.value) {
-    chart.value = echarts.init(chartRef.value as HTMLElement);
-  }
-  if (!data) {
-    return;
-  }
+  const key = Object.keys(data[0])[1];
   const xAxisData = data.map((item) => {
     const date = new Date(item.date);
     return date.toLocaleDateString();
   });
-  const yAxisData = data.map((item) => item.total_followers);
-
-  const options = {
-    animation: {
-      duration: 300,
-      easing: "cubicOut",
-      animation: "auto",
-      animationDuration: 1000,
-      animationDurationUpdate: 500,
-      animationEasing: "cubicInOut",
-      animationEasingUpdate: "cubicInOut",
-      animationThreshold: 2000,
-      progressiveThreshold: 3000,
-      progressive: 400,
-      hoverLayerThreshold: 3000,
-      useUTC: false,
+  const yAxisData = data.map((item) => item[`${key}`]);
+  myChart.setOption({
+    title: {
+      text: "",
     },
-
     tooltip: {
       trigger: "axis",
       triggerOn: "mousemove",
@@ -66,44 +134,27 @@ const initChart = (data) => {
         return [pt[0], 130];
       },
       axisPointer: {
-        type: "cross",
-      },
-      formatter: function (params) {
-        const date = params.name;
-        const value = params.data;
-        return `时间：${date}<br>粉丝数：${value}`;
+        type: "line",
       },
     },
-
     xAxis: {
-      type: "category",
       data: xAxisData,
     },
-    yAxis: {
-      type: "value",
-    },
+    yAxis: {},
     series: [
       {
-        name: "粉丝数",
-        data: yAxisData,
         type: "line",
+        name: `${key}`,
+        data: yAxisData,
         smooth: true,
+        showSymbol: false,
         lineStyle: {
           color: "purple",
           width: 5,
         },
       },
     ],
-  };
-
-  chart.value.setOption(options);
-};
-
-const fetchData = async (followedId: number) => {
-  try {
-    const data = await getSevenFollowers(followedId);
-    initChart(data);
-  } catch (error) {}
+  });
 };
 </script>
 
