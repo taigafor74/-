@@ -8,9 +8,9 @@ export const useChartStore = defineStore({
     item: [
       { name: "新增粉丝", index: 1, num: 0, origin: 0 },
       { name: "新增点赞", index: 2, num: 0, origin: 0 },
-      { name: "新增视频评论数量", index: 3, num: 0, origin: 0 },
-      { name: "新增视频收藏数量", index: 4, num: 0, origin: 0 },
-      { name: "新增播放数", index: 5, num: 0, origin: 0 },
+      { name: "新增视频评论", index: 3, num: 0, origin: 0 },
+      { name: "新增视频收藏", index: 4, num: 0, origin: 0 },
+      { name: "新增播放", index: 5, num: 0, origin: 0 },
     ],
     currentIndex: 1,
   }),

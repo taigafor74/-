@@ -2,12 +2,12 @@
   <div class="acc-con">
     <div class="item">
       <div class="item-main">
-        <div class="avatar">
+        <div class="avatar" @click="goto">
           <div class="img">
             <img :src="avatar" />
           </div>
         </div>
-        <div class="header">
+        <div class="header" @click="goto">
           <div class="name">{{ props.item?.uname }}</div>
           <div class="time">{{ timeAgo(props.item?.active_create_time) }}</div>
         </div>
@@ -87,7 +87,9 @@ import RepostItem from "./RepostItem.vue";
 import { useUserStore } from "@/stores/user";
 import { ElMessage } from "element-plus";
 import { getActive } from "@/api/active";
+import { useRouter } from "vue-router";
 import { getActiveLike, deleteLike, setLike } from "@/api/like";
+const router = useRouter();
 const store = useUserStore();
 const showStuff = ref(false);
 const showVideoCard = ref(false);
@@ -100,6 +102,9 @@ const likeCount = ref(0);
 const props = defineProps({
   item: Object,
 });
+const goto = () => {
+  router.push(`/user/${props.item.id}/main`);
+};
 onMounted(async () => {
   if (props.item) {
     likeCount.value = props.item.active_like_count;
@@ -212,6 +217,7 @@ async function fetchRepostData(id, repostItems = []) {
       padding: 0 12px 0 88px;
       position: relative;
       .avatar {
+        cursor: pointer;
         height: 48px;
         left: 24px;
         position: absolute;

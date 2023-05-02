@@ -8,6 +8,7 @@
         <div>最多收藏</div>
       </div>
     </div>
+    <div class="stuff" v-if="isEmpty">暂无视频</div>
     <div class="user-video-main">
       <UserVideoCard v-for="item in data" :item="item"></UserVideoCard>
     </div>
@@ -20,11 +21,15 @@ import { useRouter } from "vue-router";
 import { getVideoAllByUser } from "@/api/video";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
+const isEmpty = ref(false);
 const route = useRoute();
 const data = ref([]);
 const getVideo = async () => {
   const res = await getVideoAllByUser(route.params.id);
   data.value = res.data;
+  if (data.value.length == 0) {
+    isEmpty.value = true;
+  }
 };
 onMounted(() => {
   getVideo();
@@ -38,6 +43,14 @@ onMounted(() => {
   background-color: #0f0f0f;
   border: 0.058582vw solid rgb(61, 2, 199);
   border-radius: 0.492912vw;
+  .stuff {
+    color: rgb(61, 2, 199);
+    font-size: 20px;
+    text-align: center;
+    margin-top: 20px;
+    width: 100%;
+    align-items: center;
+  }
   .user-video-head {
     width: 100%;
     height: 1.640305vw;

@@ -206,7 +206,7 @@ async function loginSubmit(e: Event) {
         width: 100%;
         height: 32px;
         cursor: pointer;
-        font-family: "zpix";
+        font-family: "Zpix";
       }
     }
   }

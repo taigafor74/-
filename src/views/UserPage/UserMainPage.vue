@@ -3,6 +3,7 @@
     <div class="test-main">
       <UserMainLeft :data="data" />
       <UserLike />
+      <UserCollect />
     </div>
     <div class="sidebar" v-if="isShowSideBar">
       <UserSideBar />
@@ -14,6 +15,7 @@
 import UserSideBar from "@/components/UserPage/UserSideBar.vue";
 import UserMainLeft from "@/components/UserPage/UserMainLeft.vue";
 import UserLike from "@/components/UserPage/UserLike.vue";
+import UserCollect from "@/components/UserPage/UserCollect.vue";
 import { getVideoByUser } from "@/api/video";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";

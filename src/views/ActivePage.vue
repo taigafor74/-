@@ -1,7 +1,7 @@
 <template>
   <div class="ac-con">
     <div class="top">
-      <ActiveInput />
+      <div style="background: black"><ActiveInput /></div>
       <ActiveCard v-for="item in data" :item="item" />
     </div>
   </div>

@@ -9,6 +9,8 @@ export const useUploadStore = defineStore({
     visible: false,
     isUploadVideo: false,
     file: null,
+    isEdit: false,
+    editForm: {},
   }),
 
   actions: {
@@ -26,6 +28,15 @@ export const useUploadStore = defineStore({
     },
     setVisible(visible) {
       this.visible = visible;
+    },
+    resetAll() {
+      this.url = "";
+      this.imgUrl = "";
+      this.visible = false;
+      this.isUploadVideo = false;
+      this.file = null;
+      this.isEdit = false;
+      this.editForm = {};
     },
   },
 });

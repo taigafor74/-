@@ -3,7 +3,7 @@
     <UserHeader :userInfo="userInfo" />
     <UserMenu :userInfo="userInfo" />
     <div class="user-page-mt"><RouterView></RouterView></div>
-    <DataView></DataView>
+    <!-- <DataView></DataView> -->
   </div>
 </template>
 

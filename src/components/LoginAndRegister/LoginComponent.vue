@@ -36,7 +36,7 @@ function changeAct(e) {
 
 <style lang="scss" scoped>
 .login-container {
-  font-family: "zpix";
+  font-family: "Zpix";
   overflow: hidden;
   background-color: #0f0f0f;
   border-radius: 20px;

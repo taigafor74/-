@@ -13,9 +13,9 @@
         <div class="desc">
           {{ desc }}
         </div>
-        <div class="btn">
+        <!-- <div class="btn">
           <el-button size="small">发消息</el-button>
-        </div>
+        </div> -->
       </div>
     </div>
   </el-card>
@@ -47,11 +47,11 @@ watchEffect(() => {
     fans.value = props.data.fans;
   }
 });
-const gotoSpace = () => {
-  router.push({
+const gotoSpace = async () => {
+  await router.push({
     path: "/user/" + props.data.id + "/main",
   });
-  router.go(0);
+  location.reload();
 };
 </script>
 
@@ -110,6 +110,6 @@ const gotoSpace = () => {
 }
 .box-card {
   width: 400px;
-  font-family: "zpix";
+  font-family: "Zpix";
 }
 </style>

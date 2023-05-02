@@ -8,9 +8,10 @@
         <div>最多收藏</div>
       </div>
       <div class="btn">
-        <button>更多></button>
+        <button>更多</button>
       </div>
     </div>
+    <div class="stuff" v-if="isEmpty">暂无视频</div>
     <div class="main">
       <UserVideoCard v-for="item in data" :item="item"></UserVideoCard>
     </div>
@@ -22,12 +23,16 @@ import UserVideoCard from "@/components/UserPage/UserVideoCard.vue";
 import { useRouter } from "vue-router";
 import UserLike from "./UserLike.vue";
 import { onMounted, ref, defineProps, watchEffect } from "vue";
-const data = ref([]);
 const props = defineProps({
   data: Array,
 });
+const isEmpty = ref(false);
 watchEffect(() => {
-  data.value = props.data;
+  if (props.data.length == 0) {
+    isEmpty.value = true;
+  } else {
+    isEmpty.value = false;
+  }
 });
 </script>
 
@@ -39,6 +44,8 @@ watchEffect(() => {
   border: 1px solid rgb(61, 2, 199);
   border-radius: 8.5px;
   margin-bottom: 17px;
+  display: flex;
+  flex-direction: column;
   .head {
     width: 100%;
     height: 28px;
@@ -81,6 +88,14 @@ watchEffect(() => {
         }
       }
     }
+  }
+  .stuff {
+    color: rgb(61, 2, 199);
+    font-size: 20px;
+    text-align: center;
+    margin-top: 20px;
+    width: 100%;
+    align-items: center;
   }
   .main {
     width: 100%;

@@ -29,7 +29,7 @@ const showLoginState = showLogin();
 
 .main-container {
   display: flex;
-  font-family: "zpix";
+  font-family: "Zpix";
   flex-direction: column;
   color: white;
   width: 100%;

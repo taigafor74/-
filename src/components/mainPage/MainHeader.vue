@@ -180,7 +180,7 @@ function showSelectBoxOnHover() {
       cursor: pointer;
       font-size: 1.471646vw;
       color: rgb(61, 2, 199);
-      font-family: "zpix", sans-serif;
+      font-family: "Zpix", sans-serif;
     }
   }
   .main-header-middle {

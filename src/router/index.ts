@@ -43,9 +43,34 @@ const router = createRouter({
       component: () => import("../views/VideoPage.vue"),
     },
     {
-      path: "/manage",
+      path: "/manage/:id",
       name: "manage",
-      component: () => import("../views/UserManagePage.vue"),
+      component: () => import("../views/UserManagePage/UserManagePage.vue"),
+      children: [
+        {
+          path: "main",
+          name: "manageMain",
+          component: () => import("../views/UserManagePage/UserManageMain.vue"),
+        },
+        {
+          path: "video",
+          name: "manageVideo",
+          component: () =>
+            import("../views/UserManagePage/UserManageVideo.vue"),
+        },
+        {
+          path: "upload",
+          name: "manageUpload",
+          component: () =>
+            import("../views/UserManagePage/UserManageUpload.vue"),
+        },
+        {
+          path: "comment",
+          name: "manageComment",
+          component: () =>
+            import("../views/UserManagePage/UserManageComment.vue"),
+        },
+      ],
     },
     {
       path: "/active",
@@ -87,6 +112,11 @@ const router = createRouter({
           path: "main",
           name: "userMain",
           component: () => import("../views/UserPage/UserMainPage.vue"),
+        },
+        {
+          path: "collect",
+          name: "userCollect",
+          component: () => import("../views/UserPage/UserCollectPage.vue"),
         },
         {
           path: "active",

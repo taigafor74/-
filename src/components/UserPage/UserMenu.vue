@@ -55,10 +55,10 @@ type userMenu = {
   routerPath: string;
 };
 enum enumIndex {
-  "/user/main" = 0,
+  "main" = 0,
   dynamic = 1,
-  "/user/video" = 2,
-  collect = 3,
+  "video" = 2,
+  "collect" = 3,
   setting = 4,
 }
 const follow = ref(0);
@@ -67,7 +67,7 @@ const router = useRouter();
 const route = useRoute();
 const userId = route.params.id;
 const cursor = ref<HTMLElement | any>(null);
-let currentIndex: any = enumIndex[route.path as any];
+let currentIndex: any = null;
 let userMenuLeftItem = ref<HTMLElement | any>(null);
 async function getData() {
   likecount.value = await getTotalLikes(route.params.id);
@@ -96,7 +96,12 @@ const goFans = () => {
   });
 };
 onMounted(() => {
+  let str = route.path;
+  str = str.split("/");
+  str = str[str.length - 1];
+  currentIndex = enumIndex[str];
   cursorGoto(currentIndex);
+
   if (userMenuLeftItem.value && userMenuLeftItem.value[currentIndex]) {
     userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
   }
@@ -124,7 +129,7 @@ const userMenuArr: userMenu[] = reactive([
     title: "收藏",
     iconSrc: "../../assets/icon/收藏.png",
     index: 3,
-    routerPath: "userMain",
+    routerPath: "userCollect",
   },
   {
     title: "设置",

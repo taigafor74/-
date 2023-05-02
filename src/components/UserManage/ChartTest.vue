@@ -2,7 +2,10 @@
   <div>
     <div class="chart-con">
       <div class="header">
-        <div class="name">{{ chartStore.time }}新增用户数据</div>
+        <div class="name">
+          {{ chartStore.time
+          }}{{ chartStore.item[chartStore.currentIndex - 1].name }}数据
+        </div>
         <div class="export">导出数据</div>
       </div>
       <div ref="chartRef" style="width: 100%; height: 100%" id="main"></div>

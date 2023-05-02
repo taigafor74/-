@@ -20,9 +20,19 @@
 <script setup lang="ts">
 import {} from "vue";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
+import { ElMessage } from "element-plus";
+const store = useUserStore();
 const router = useRouter();
 function goUpload() {
-  router.push("/manage");
+  if (store.isLoggedIn) {
+    router.push(`/manage/${store.id}/main`);
+  } else {
+    ElMessage({
+      message: "请先登录",
+      type: "error",
+    });
+  }
 }
 </script>
 

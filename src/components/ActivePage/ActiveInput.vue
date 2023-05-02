@@ -147,7 +147,7 @@ const handleFileList = async (fileList: UploadFile[]) => {
   gap: 10px;
 }
 .input-con {
-  background-color: #000000;
+  background-color: transparent;
   border-radius: 4px;
   box-sizing: border-box;
   min-width: 632px;

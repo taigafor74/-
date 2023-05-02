@@ -1,13 +1,14 @@
 <template>
   <div class="multi">
-    //<span>@{{ uname }}</span
+    //<span @click="goto">@{{ uname }}</span
     >:{{ repostContent }}
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from "vue";
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 const props = defineProps({
   item: {
     type: Object,
@@ -26,6 +27,11 @@ const props = defineProps({
     default: 0,
   },
 });
+const goto = () => {
+  router.push({
+    path: "/user/" + props.id + "/main",
+  });
+};
 </script>
 
 <style lang="scss" scoped>

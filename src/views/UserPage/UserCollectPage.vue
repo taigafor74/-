@@ -1,7 +1,10 @@
 <template>
-  <div class="user-like-con">
+  <div class="user-collect-con">
     <div class="header">
-      <p>最近点赞的视频</p>
+      <p>收藏的视频</p>
+      <div class="btn">
+        <el-button>更多</el-button>
+      </div>
     </div>
     <div class="stuff" v-if="isEmpty">暂无视频</div>
     <div class="video-part">
@@ -12,15 +15,15 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import UserVideoCard from "./UserVideoCard.vue";
+import UserVideoCard from "@/components/UserPage/UserVideoCard.vue";
 import { userLike } from "@/api/like";
 import { useRoute } from "vue-router";
+import { getCollectionVideo } from "@/api/collect";
 const route = useRoute();
 const data = ref([]);
 const isEmpty = ref(false);
 onMounted(async () => {
-  const allData = await userLike(route.params.id);
-  data.value = allData.slice(0, 10);
+  data.value = await getCollectionVideo(route.params.id);
   if (data.value.length == 0) {
     isEmpty.value = true;
   }
@@ -28,7 +31,7 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
-.user-like-con {
+.user-collect-con {
   padding: 20px;
   background: black;
   border: 1px solid rgb(61, 2, 199);
@@ -36,6 +39,9 @@ onMounted(async () => {
   margin-bottom: 17px;
   width: 100%;
   .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     padding-left: 10px;
     margin-bottom: 8px;
     p {

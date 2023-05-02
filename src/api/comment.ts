@@ -50,3 +50,13 @@ export function getTotalComment(id) {
     return res.data.data;
   });
 }
+export function getUserVideoComment(id) {
+  return request.get(`/comment/getUserVideoComment/${id}`).then((res) => {
+    return res.data.data;
+  });
+}
+export function commentDelete(id) {
+  return request.put(`comment/delete/${id}`).then((res) => {
+    return res.data;
+  });
+}

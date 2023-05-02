@@ -343,7 +343,7 @@ function registerSubmit(e) {
             border: 0;
             border-radius: 10px;
             height: 32px;
-            font-family: "zpix";
+            font-family: "Zpix";
             border: 1px solid transparent;
           }
         }
@@ -358,7 +358,7 @@ function registerSubmit(e) {
           width: 100%;
           height: 32px;
           cursor: pointer;
-          font-family: "zpix";
+          font-family: "Zpix";
         }
       }
     }

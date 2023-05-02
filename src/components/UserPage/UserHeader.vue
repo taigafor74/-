@@ -188,7 +188,8 @@ function dataURLtoFile(dataurl, filename) {
 .user-header-container {
   border: 1px solid rgb(61, 2, 199);
   margin-top: 5px;
-  border-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   border-bottom: 0;
   width: 100%;
   background-image: url("@/assets/background/userbg.jpg");
@@ -224,7 +225,7 @@ function dataURLtoFile(dataurl, filename) {
       justify-content: space-between;
       .user-header-info-name {
         font-size: 1.343292vw;
-        font-family: "zpix" "sans-serif";
+        font-family: "Zpix" "sans-serif";
         font-weight: 600;
         color: #ffffff;
       }

@@ -58,7 +58,9 @@ const chooseCard = (index) => {
 <style lang="scss" scoped>
 .DataView-con {
   width: 100%;
-  margin-top: 50px;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
   margin-bottom: 50px;
   .header {
     width: 100%;

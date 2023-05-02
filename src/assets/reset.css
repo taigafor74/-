@@ -138,6 +138,6 @@ table {
   background-color: black;
 }
 @font-face {
-  font-family: "zpix";
-  src: url("./zpix.ttf") format("truetype");
+  font-family: "Zpix";
+  src: url("./Zpix.ttf") format("ttf");
 }
