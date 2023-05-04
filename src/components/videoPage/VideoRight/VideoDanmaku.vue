@@ -30,7 +30,7 @@
           </div>
           <div class="list">
             <ul>
-              <li v-for="item in data">
+              <li v-for="item in data" @click="handleReport(item)">
                 <div class="time">{{ formatTimeStmap(item.timestamp) }}</div>
                 <div class="content">
                   {{ item.content }}
@@ -42,6 +42,27 @@
         </div>
       </div>
     </Transition>
+    <el-dialog v-model="showReport" title="请说明举报原因">
+      <div>
+        <el-input
+          v-model="textarea"
+          autosize
+          type="textarea"
+          placeholder="请输入举报理由"
+        />
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+          "
+        >
+          <el-button type="primary" @click="submitReport">提交</el-button>
+          <el-button type="warning" @click="resetReport">重置</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -50,10 +71,56 @@ import { ref, onMounted, watchEffect } from "vue";
 import { useRoute } from "vue-router";
 import { geDanmakuByvid } from "@/api/danmaku";
 import { timeAgo } from "@/utils/getTime";
+import { useUserStore } from "@/stores/user";
+import { ElMessage } from "element-plus";
+import { setReport } from "@/api/report";
+const store = useUserStore();
 const arrow: any = ref(null);
 const show = ref(false);
 const route = useRoute();
 const data = ref([]);
+const showReport = ref(false);
+const textarea = ref("");
+const user_id = ref(0);
+const bid = ref(0);
+const handleReport = (item) => {
+  if (store.isLoggedIn) {
+    user_id.value = item.user_id;
+    bid.value = item.bid;
+    textarea.value = "";
+    showReport.value = true;
+  } else {
+    ElMessage.error("请先登录");
+  }
+};
+const submitReport = async () => {
+  const form = {
+    reporter_id: store.id,
+    reported_type: "barrage",
+    reported_id: user_id.value,
+    reason: textarea.value,
+    report_target_id: bid.value,
+  };
+  console.log(form);
+
+  const res = await setReport(form);
+  if (res.success == true) {
+    ElMessage.success("举报成功");
+    textarea.value = "";
+    showReport.value = false;
+    bid.value = 0;
+    user_id.value = 0;
+  } else {
+    ElMessage.error("举报失败");
+    textarea.value = "";
+    showReport.value = false;
+    bid.value = 0;
+    user_id.value = 0;
+  }
+};
+const resetReport = () => {
+  textarea.value = "";
+};
 const formatTimeStmap = (timestamp: any) => {
   //formate video time stamp
   //hh:mm:ss
@@ -68,9 +135,7 @@ const formatTimeStmap = (timestamp: any) => {
   return hourStr + ":" + minuteStr + ":" + secondStr;
 };
 onMounted(async () => {
-  console.log(route.query.vid);
   data.value = await geDanmakuByvid(route.query.vid);
-  console.log(data.value);
 });
 function toggle() {
   show.value = !show.value;
@@ -150,7 +215,7 @@ function toggle() {
         }
         .sendtime {
           text-align: left;
-          padding-left: 18px;
+          padding-left: 5px;
           width: 88px;
           cursor: pointer;
           display: inline-block;
@@ -168,6 +233,10 @@ function toggle() {
             color: #c0c0c0;
             padding: 0 15px;
             height: 24px;
+            align-items: center;
+            &:hover {
+              background: #1e1e1e;
+            }
             .time {
               padding-right: 0;
               text-align: left;

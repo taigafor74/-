@@ -8,10 +8,12 @@
       </div>
       <div class="main-comment-box">
         <div class="user-info">
-          <div class="user-name">{{ props.item?.uname }}</div>
+          <div class="user-name">
+            {{ props.item?.uname }}
+          </div>
           <span class="reply-content">
             <div class="reply-to" v-if="replyname">{{ replyname }}</div>
-            {{ props.item?.content }}
+            <div>{{ props.item?.content }}</div>
           </span>
         </div>
         <div class="reply">
@@ -55,10 +57,32 @@
               "
               >回复</span
             >
+            <span class="report" @click="handleReport">投诉</span>
           </div>
         </div>
       </div>
     </div>
+    <el-dialog v-model="showReport" title="请说明举报原因">
+      <div>
+        <el-input
+          v-model="textarea"
+          autosize
+          type="textarea"
+          placeholder="请输入举报理由"
+        />
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+          "
+        >
+          <el-button type="primary" @click="submitReport">提交</el-button>
+          <el-button type="warning" @click="resetReport">重置</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -69,12 +93,45 @@ import { useCommentStore } from "@/stores/comment";
 import { ElMessage } from "element-plus";
 import { getCommentLike, deleteLike, setLike } from "@/api/like";
 import { useUserStore } from "@/stores/user";
+import { setReport } from "@/api/report";
 const userStore = useUserStore();
 const store = useCommentStore();
 const likeCount = ref(0);
 const img = ref("");
 const showReply = ref(false);
 const replyname = ref("");
+const showReport = ref(false);
+const textarea = ref("");
+const handleReport = () => {
+  if (userStore.isLoggedIn) {
+    textarea.value = "";
+    showReport.value = true;
+  } else {
+    ElMessage.error("请先登录");
+  }
+};
+const submitReport = async () => {
+  const form = {
+    reporter_id: userStore.id,
+    reported_type: "comment",
+    reported_id: props.item.user_id,
+    reason: textarea.value,
+    report_target_id: props.item.comment_id,
+  };
+  const res = await setReport(form);
+  if (res.success == true) {
+    ElMessage.success("举报成功");
+    textarea.value = "";
+    showReport.value = false;
+  } else {
+    ElMessage.error("举报失败");
+    textarea.value = "";
+    showReport.value = false;
+  }
+};
+const resetReport = () => {
+  textarea.value = "";
+};
 const props = defineProps({
   item: {
     type: Object,
@@ -148,6 +205,11 @@ watchEffect(async () => {
 </script>
 
 <style lang="scss" scoped>
+.report {
+  margin-left: 10px;
+  cursor: pointer;
+  color: #d812aa;
+}
 .reply-container {
   width: 100%;
   padding-left: 72px;

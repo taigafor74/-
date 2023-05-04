@@ -10,7 +10,7 @@
       </span>
       <span class="item">
         <img src="@/assets/icon/dm.svg" alt="" />
-        45
+        {{ props.data.danmacount }}
       </span>
       <span class="item">
         <img src="@/assets/icon/下载.svg" alt="" />

@@ -5,3 +5,7 @@ export function getSettingVideo() {
     return res.data.data;
   });
 }
+export async function getTitle() {
+  const res = await request.get("/setting/getTitle");
+  return res.data;
+}

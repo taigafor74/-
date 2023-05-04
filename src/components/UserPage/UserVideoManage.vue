@@ -1,13 +1,13 @@
 <template>
   <div class="user-video-manage-container">
     <div class="manage-card-box">
-      <div class="manage-card-box-item">
+      <div class="manage-card-box-item" @click="goUpload">
         <div class="img-box">
           <img src="@/assets/icon/视频上传.png" />
         </div>
-        <div class="item-font" @click="goUpload">视频投稿</div>
+        <div class="item-font">视频投稿</div>
       </div>
-      <div class="manage-card-box-item">
+      <div class="manage-card-box-item" @click="goMain">
         <div class="img-box">
           <img src="@/assets/icon/内容管理.png" />
         </div>
@@ -25,6 +25,16 @@ import { ElMessage } from "element-plus";
 const store = useUserStore();
 const router = useRouter();
 function goUpload() {
+  if (store.isLoggedIn) {
+    router.push(`/manage/${store.id}/upload`);
+  } else {
+    ElMessage({
+      message: "请先登录",
+      type: "error",
+    });
+  }
+}
+function goMain() {
   if (store.isLoggedIn) {
     router.push(`/manage/${store.id}/main`);
   } else {

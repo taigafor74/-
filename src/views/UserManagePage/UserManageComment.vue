@@ -59,10 +59,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watchEffect, defineProps, computed } from "vue";
-import { useManageStore } from "@/stores/manage";
 import { useRoute, useRouter } from "vue-router";
 import { commentDelete } from "@/api/comment";
 import { ElMessage } from "element-plus";
+import { useManageStore } from "@/stores/manage";
 const store = useManageStore();
 const router = useRouter();
 const currentPage = ref(1);

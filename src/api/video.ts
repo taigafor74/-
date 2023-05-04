@@ -14,3 +14,8 @@ export function getVideoByArea(area) {
     return res.data.data;
   });
 }
+export function getHot(area) {
+  return request.get(`/videos/getHot/${area}`).then((res) => {
+    return res.data.data;
+  });
+}

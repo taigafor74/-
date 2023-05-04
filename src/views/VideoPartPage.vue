@@ -18,8 +18,13 @@
     <div class="swiper">
       <h1>{{ name }}</h1>
       <el-carousel :interval="4000" type="card" height="270px">
-        <el-carousel-item v-for="item in 6" :key="item">
-          <h3 text="2xl" justify="center">{{ item }}</h3>
+        <el-carousel-item
+          v-for="item in hotSwiper"
+          :key="item.vid"
+          @click="gotoVideo(item.vid)"
+        >
+          <img :src="baseUrl + item.img" />
+          <span class="swiper-title">{{ item.title }}</span>
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -38,20 +43,9 @@ const route = useRoute();
 const name = ref("");
 name.value = btnName[route.query.query];
 import { getVideoList } from "@/api/mainPage";
-import { getVideoByArea } from "@/api/video";
-const data = ref([]);
-onMounted(async () => {
-  const result = btnArr.find((item) => item.query == route.query.query);
-  console.log(result.name);
-  data.value = await getVideoByArea(result.name);
-});
-watchEffect(async () => {
-  if (route.query.query) {
-    const result = btnArr.find((item) => item.query == route.query.query);
-    name.value = btnName[route.query.query];
-    data.value = await getVideoByArea(result.name);
-  }
-});
+import { getVideoByArea, getHot } from "@/api/video";
+const hotSwiper = ref([]);
+const baseUrl = "http://localhost:3000/videoImg/";
 enum btnName {
   game = "游戏",
   music = "音乐",
@@ -72,6 +66,32 @@ const btnArr = [
   { name: "娱乐", query: "entertainment" },
   { name: "绘画", query: "paint" },
 ];
+const data = ref([]);
+onMounted(async () => {
+  const result = btnArr.find((item) => item.query == route.query.query);
+  const hot = await getHot(result.name);
+  hotSwiper.value = hot;
+  console.log(hotSwiper.value);
+
+  data.value = await getVideoByArea(result.name);
+});
+watchEffect(async () => {
+  if (route.query.query) {
+    const result = btnArr.find((item) => item.query == route.query.query);
+    name.value = btnName[route.query.query];
+    data.value = await getVideoByArea(result.name);
+    const hot = await getHot(result.name);
+    hotSwiper.value = hot;
+  }
+});
+const gotoVideo = (vid) => {
+  router.push({
+    path: `/video`,
+    query: {
+      vid,
+    },
+  });
+};
 const goto = (query) => {
   router.push({
     path: `/v/${query}`,
@@ -164,6 +184,25 @@ const goto = (query) => {
       color: blueviolet;
     }
     margin-top: 64px;
+    position: relative;
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 2;
+    cursor: pointer;
+    padding: 0 15px;
+    margin-top: 64px;
+    .swiper-title {
+      position: absolute;
+      font-size: 30px;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      color: rgb(255, 0, 0);
+    }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   }
   .video-part {
     margin-top: 20px;

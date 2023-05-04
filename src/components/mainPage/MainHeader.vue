@@ -20,7 +20,7 @@
           />
         </svg>
       </div>
-      <h1 class="main-header-title-font" @click="gotoMainPage">弹幕视频网站</h1>
+      <h1 class="main-header-title-font" @click="gotoMainPage">{{ title }}</h1>
     </div>
     <div class="main-header-middle">
       <div class="header-input-box">
@@ -81,12 +81,14 @@ import { computed, reactive, toRefs, ref, watchEffect, onMounted } from "vue";
 import { useMainStore } from "@/stores/main";
 import { useUserStore } from "@/stores/user";
 import { showLogin } from "@/stores/counter";
+import { getTitle } from "@/api/setting";
 import { useSocketStore } from "@/stores/socket";
 const keyword = ref("");
 const useSocket = useSocketStore();
 const showLoginState = showLogin();
 const userStore = useUserStore();
 const store = useMainStore();
+const title = ref("弹幕视频网站");
 const data = ref([]);
 const goSearch = async () => {
   await router.push({
@@ -99,6 +101,10 @@ const gotoReply = () => {
     name: "replyLike",
   });
 };
+onMounted(async () => {
+  const res = await getTitle();
+  title.value = res.data[0].setting_target;
+});
 watchEffect(() => {
   if (useSocket.data) {
     console.log(useSocket.data);

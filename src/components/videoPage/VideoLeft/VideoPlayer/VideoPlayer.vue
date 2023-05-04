@@ -5,11 +5,13 @@
     @mouseleave="showSetting = false"
   >
     <div class="video-box">
-      <video ref="videoPlayer" loop="true" @click="toggleVideo"></video>
+      <video
+        ref="videoPlayer"
+        loop="true"
+        @click="toggleVideo"
+        :style="videoStyles"
+      ></video>
       <div class="danmaku" ref="danmakuCon" @click="maskDanmaku"></div>
-      <!-- <div class="mini-video-container" v-show="isSmall">
-        <video ref="miniVideo" controls></video>
-      </div> -->
     </div>
     <div class="video-box-bottom">
       <div class="setting-con" v-if="showSetting">
@@ -96,10 +98,10 @@
             />
           </div>
           <div class="icon window">
-            <img src="@/assets/icon/小窗口.png" @click="openPictureInPicture" />
+            <img src="@/assets/icon/小窗口.png" @click="smallwindow" />
           </div>
           <div class="icon browserfull">
-            <img src="@/assets/icon/网页全屏.png" @click="browserFull" />
+            <img src="@/assets/icon/网页全屏.png" @click="cineme" />
           </div>
           <div class="icon fullscrean">
             <img src="@/assets/icon/全屏.png" @click="fullscrean" />
@@ -190,9 +192,9 @@
             <div class="danmanku_type_set">
               <div class="top">
                 <el-radio-group v-model="radio1" size="small">
-                  <el-radio-button label="顶部" />
-                  <el-radio-button label="滚动" />
-                  <el-radio-button label="底部" />
+                  <el-radio-button :label="top">顶部</el-radio-button>
+                  <el-radio-button :label="scroll">滚动</el-radio-button>
+                  <el-radio-button :label="bottom">底部</el-radio-button>
                 </el-radio-group>
               </div>
               <div class="bottom">
@@ -225,36 +227,40 @@ import {
   defineProps,
   watchEffect,
   onBeforeUnmount,
+  computed,
 } from "vue";
 import Hls from "hls.js/dist/hls.min.js";
 import { getVideo } from "@/api/mainPage";
 import { useRoute, useRouter } from "vue-router";
+import { useVideoStore } from "@/stores/VideoStore";
 import { useUserStore } from "@/stores/user";
 import { setWatch } from "@/api/watch";
-import { useVideoStore } from "@/stores/VideoStore";
+import { postDanmaku, getFormatDanmaku } from "@/api/danmaku";
+import { ElMessage } from "element-plus";
 const videoStore = useVideoStore();
-const store = useUserStore();
 const videoPlayer = ref();
 const menuItem1 = ref();
 const menuItem2 = ref();
 const playerContainer = ref();
 const qualitybox = ref();
+const radio1 = ref("scroll");
 const progressBar = ref();
 const nowBar = ref();
 const preloadBar = ref();
 const totalTime = ref();
 const nowTime = ref();
-const isSmall = ref(false);
 const playImg = ref();
 const settingBmenu = ref();
-const radio1 = ref("滚动");
 const playerRateBox = ref();
 const danmakuCon = ref();
-const userInput = ref();
-const color1 = ref("#ffffff");
+const userInput = ref("");
 const isShowDanmaku = ref(true);
-const isMiniPlayer = ref(false);
-const miniVideo = ref(null);
+const color1 = ref("#ffffff");
+const top = "top";
+const scroll = "scroll";
+const bottom = "bottom";
+const store = useUserStore();
+const isFullScrean = ref(false);
 let timer: any = null;
 let showSetting = ref(false);
 let loadedFragments: any = [];
@@ -275,76 +281,48 @@ const userSetting = {
   isSetting: false,
   opcity: 0.5,
 };
+const videoStyles = computed(() => ({
+  height: isFullScrean.value ? "auto" : "600px",
+}));
 
 let userDanmaku = ref("");
-const danmakuArr = reactive([
-  {
-    text: "1wadwadpiwajdwadpwajp",
-    time: 2,
-    color: "red",
-    speed: 1,
-    fontSize: 20,
-    flag: false,
-  },
-  {
-    text: "diwoaj21212diwadwadpiwajdwadpwajp",
-    time: 4,
-    color: "red",
-    speed: 1,
-    fontSize: 20,
-    flag: false,
-  },
-  {
-    text: "1jp",
-    time: 5,
-    color: "red",
-    speed: 1,
-    fontSize: 20,
-    flag: false,
-  },
-  {
-    text: "1jp",
-    time: 8,
-    color: "green",
-    speed: 1,
-    fontSize: 20,
-    flag: false,
-  },
-  {
-    text: "1jp",
-    time: 10,
-    color: "blue",
-    speed: 1,
-    fontSize: 20,
-    flag: false,
-  },
-  {
-    text: "1jp",
-    time: 15,
-    color: "blue",
-    speed: 1,
-    fontSize: 20,
-    flag: false,
-  },
-]);
-
+const danmakuArr = reactive([]);
 const danmakuPool = {
   pool: [] as any,
   activePool: [] as any,
   size: 50, // 根据实际需求调整池大小
+  tracks: [] as any[],
+  fixedTracks: [] as any[],
+  trackHeight: 20,
   init: function () {
     for (let i = 0; i < this.size; i++) {
       const danmaku = document.createElement("span");
       danmaku.classList.add("danmakuspan");
       this.pool.push(danmaku);
     }
+    for (let i = 0; i < 30; i++) {
+      this.tracks.push({ top: i * this.trackHeight, active: false });
+    }
+    for (let i = 0; i < 30; i++) {
+      this.fixedTracks.push({ top: i * this.trackHeight, active: false });
+    }
   },
-  getDanmaku: function () {
-    if (this.pool.length > 0) {
-      return this.pool.shift();
-    } else {
+  getDanmaku: function (type = "scroll") {
+    if (type == "scroll") {
+      if (this.pool.length > 0) {
+        return this.pool.shift();
+      } else {
+        const danmaku = document.createElement("span");
+        danmaku.classList.add("danmakuspan");
+        return danmaku;
+      }
+    } else if (type == "top") {
       const danmaku = document.createElement("span");
-      danmaku.classList.add("danmakuspan");
+      danmaku.classList.add("danmaku-top");
+      return danmaku;
+    } else if (type == "bottom") {
+      const danmaku = document.createElement("span");
+      danmaku.classList.add("danmaku-top");
       return danmaku;
     }
   },
@@ -352,44 +330,54 @@ const danmakuPool = {
     this.pool.push(danmaku);
   },
 };
-watchEffect(() => {
-  if (props.data && props.data.path) {
-    src.value = `http://localhost:3000/videos/${props.data.path}/720p/${props.data.path}_720p.m3u8`;
-    setInfo(src.value, videoPlayer.value);
-    danmakuPool.init();
-  }
-});
-onMounted(() => {});
-onUnmounted(() => {
-  clearAll();
-  hls.destroy();
-});
-onBeforeUnmount(async () => {
-  if (store.isLoggedIn) {
-    await setWatch({
-      user_id: store.id,
-      video_id: props.data.vid,
-      watch_time: videoPlayer.value.currentTime,
-    });
-  }
-  return;
-});
-function openPictureInPicture() {
-  videoPlayer.value.requestPictureInPicture();
-}
-function browserFull() {
-  videoStore.isFullScreen = !videoStore.isFullScreen;
-}
-function sendDanmaku() {
-  userInput.value.value = "";
-  danmakuArr.push({
-    text: userDanmaku.value,
-    time: videoPlayer.value.currentTime,
-    color: "red",
-    speed: 1,
-    fontSize: 20,
-    flag: false,
+onMounted(() => {
+  document.addEventListener("fullscreenchange", handleFullscreenChange);
+  watchEffect(async () => {
+    if (props.data && props.data.path) {
+      src.value = `http://localhost:3000/videos/${props.data.path}/720p/${props.data.path}_720p.m3u8`;
+      setInfo(src.value);
+      danmakuPool.init();
+      const res = await getFormatDanmaku(props.data.vid);
+      danmakuArr.push(...res);
+    }
   });
+});
+async function sendDanmaku() {
+  if (store.isLoggedIn) {
+    if (userDanmaku.value == "") {
+      ElMessage.error("弹幕内容不能为空");
+      return;
+    } else {
+      const form = {
+        video_id: props.data.vid,
+        user_id: store.id,
+        content: userDanmaku.value,
+        timestamp: videoPlayer.value.currentTime,
+        color: color1.value,
+        type: radio1.value,
+      };
+      const res = await postDanmaku(form);
+      if (res.error) {
+        ElMessage.error(res.message);
+        return;
+      } else {
+        ElMessage.success(res.message);
+        danmakuArr.push({
+          text: userDanmaku.value,
+          time: videoPlayer.value.currentTime,
+          color: color1.value,
+          type: radio1.value,
+          fontSize: 20,
+          flag: false,
+          isSend: true,
+        });
+      }
+
+      userDanmaku.value = "";
+    }
+  } else {
+    ElMessage.error("请先登录");
+  }
 }
 function switchDanmaku() {
   isShowDanmaku.value = !isShowDanmaku.value;
@@ -402,32 +390,106 @@ function setDanmaku() {
   let height = player.clientHeight;
   danmakuArr.forEach((item, index) => {
     if (item.time <= currentTime && !item.flag) {
-      let danmaku = danmakuPool.getDanmaku();
-      let dt = 2;
-      let dtime = Math.random() * 10 + dt;
-      let top = Math.random() * (height - 20);
+      const textLength = item.text.length;
+      const baseDuration = 5; // 基本动画持续时间，可以根据需要调整
+      const extraDuration = textLength * 0.01; // 按文本长度调整的额外动画持续时间，可以根据需要调整系数
+      const dtime = baseDuration + extraDuration;
+      let danmaku = danmakuPool.getDanmaku(item?.type);
+      const track = findAvailableTrack(dtime, item?.type); // 查找可用轨道
+      if (!track) return; // 如果没有可用轨道，则跳过
       item.flag = true;
-      if (index > 5) {
-        danmaku.style.border = `1px solid blue`;
+      if (item.isSend) {
+        danmaku.style.border = `1px solid purple`;
+        danmaku.style.padding = `8px`;
       }
       danmakuCon.value.appendChild(danmaku);
       danmaku.innerText = item.text;
-      danmaku.style.fontSize = `${item.fontSize}px`;
+      danmaku.style.fontSize = `20px`;
       danmaku.style.color = `${item.color}`;
-      danmaku.style.top = `${top}px`;
+      danmaku.style.top = `${track.top}px`;
       danmaku.style.animationDuration = `${dtime}s`;
       danmaku.addEventListener("animationend", function () {
-        danmakuCon.value.removeChild(danmaku);
+        if (danmakuCon.value.contains(danmaku)) {
+          // 检查 danmaku 是否仍然是 danmakuCon.value 的子节点
+          danmakuCon.value.removeChild(danmaku);
+        }
         danmakuPool.returnDanmaku(danmaku);
-        danmakuPool.activePool.splice(
-          danmakuPool.activePool.indexOf(danmaku),
-          1
-        );
+        track.active = false; // 释放轨道
       });
       danmakuPool.activePool.push(danmaku);
+      track.active = true; // 将轨道设为活动状态
     }
   });
 }
+
+function findAvailableTrack(dtime, type = "scroll") {
+  if (type == "scroll") {
+    // 随机选择一个轨道
+    const randomIndex = Math.floor(Math.random() * danmakuPool.tracks.length);
+    let track = danmakuPool.tracks[randomIndex];
+
+    // 如果选中的轨道处于活动状态，尝试查找一个空闲轨道
+    if (track.active) {
+      const availableTracks = danmakuPool.tracks.filter((t) => !t.active);
+      if (availableTracks.length > 0) {
+        track =
+          availableTracks[Math.floor(Math.random() * availableTracks.length)];
+      } else {
+        // 如果没有空闲轨道，创建新轨道
+        track = {
+          top: danmakuPool.tracks.length * danmakuPool.trackHeight,
+          active: false,
+        };
+        danmakuPool.tracks.push(track);
+      }
+    }
+
+    setTimeout(() => {
+      track.active = false;
+    }, dtime * 1000);
+
+    return track;
+  } else if (type == "top") {
+    const topIndex = 0;
+    let track = danmakuPool.fixedTracks[topIndex];
+    if (track.active) {
+      const availableTracks = danmakuPool.fixedTracks.filter((t) => !t.active);
+      if (availableTracks.length > 0) {
+        track = availableTracks[0];
+      } else {
+        track = {
+          top: danmakuPool.fixedTracks.length * danmakuPool.trackHeight,
+          active: false,
+        };
+        danmakuPool.fixedTracks.push(track);
+      }
+    }
+    setTimeout(() => {
+      track.active = false;
+    }, dtime * 1000);
+    return track;
+  } else if (type == "bottom") {
+    const bottomIndex = danmakuPool.fixedTracks.length - 1;
+    let track = danmakuPool.fixedTracks[bottomIndex];
+    if (track.active) {
+      const availableTracks = danmakuPool.fixedTracks.filter((t) => !t.active);
+      if (availableTracks.length > 0) {
+        track = availableTracks[availableTracks.length - 1];
+      } else {
+        track = {
+          top: danmakuPool.fixedTracks.length * danmakuPool.trackHeight,
+          active: false,
+        };
+        danmakuPool.fixedTracks.push(track);
+      }
+    }
+    setTimeout(() => {
+      track.active = false;
+    }, dtime * 1000);
+    return track;
+  }
+}
+
 function removeAllDanmaku() {
   danmakuArr.forEach((item) => {
     item.flag = true;
@@ -436,11 +498,14 @@ function removeAllDanmaku() {
     }
   });
   danmakuPool.activePool.forEach((item: any) => {
-    danmakuCon.value.removeChild(item);
-    danmakuPool.returnDanmaku(item);
+    if (danmakuCon.value.contains(item)) {
+      danmakuCon.value.removeChild(item);
+      danmakuPool.returnDanmaku(item);
+    }
   });
   danmakuPool.activePool = [];
 }
+
 function stopDanmaku() {
   danmakuPool.activePool.forEach((item: any) => {
     item.classList.add("paused");
@@ -496,16 +561,16 @@ function setTime() {
     }`;
   }
 }
-function loadVideoSource(src: any, vp, currentTime?: number) {
+function loadVideoSource(src: any, currentTime?: number) {
   if (hls) {
     hls.destroy();
   }
   hls = new Hls();
   hls.loadSource(src);
-  hls.attachMedia(vp);
+  hls.attachMedia(videoPlayer.value);
   hls.on(Hls.Events.MANIFEST_PARSED, () => {
     if (currentTime !== undefined) {
-      vp.currentTime = currentTime;
+      videoPlayer.value.currentTime = currentTime;
     }
   });
   hls.on(Hls.Events.FRAG_LOADED, (event: any, data: any) => {
@@ -517,7 +582,7 @@ function loadVideoSource(src: any, vp, currentTime?: number) {
         hls.levels[hls.currentLevel].details.fragments.length;
       updatePreloadProgress(loadedFragments.length, totalFragments);
     } else {
-      console.warn("Unable to access level details");
+      // console.warn("Unable to access level details");
     }
   });
 }
@@ -600,9 +665,9 @@ function updatePreloadProgress(loadedFragments: any, totalFragments: any) {
   const preload = preloadBar.value;
   setProgress(loadedFragments, totalFragments, pconWidth, preload);
 }
-function setInfo(src: any, vp) {
+function setInfo(src: any) {
   if (Hls.isSupported()) {
-    loadVideoSource(src, vp);
+    loadVideoSource(src);
     videoPlayer.value.volume = 0.5;
     hls.on(Hls.Events.ERROR, (event: any, data: any) => {
       console.error("Error event:", event, "Data:", data);
@@ -620,17 +685,24 @@ function getAssetsImages(url: string) {
 }
 function fullscrean() {
   const playerContainer = videoPlayer.value.closest(".player-container");
-  const requestFullScreenMethods = [
-    "requestFullscreen",
-    "webkitRequestFullscreen",
-    "mozRequestFullScreen",
-    "msRequestFullscreen",
-  ];
-  for (const method of requestFullScreenMethods) {
-    if (playerContainer[method]) {
-      playerContainer[method]();
-      break;
+  if (!isFullScrean.value) {
+    const requestFullScreenMethods = [
+      "requestFullscreen",
+      "webkitRequestFullscreen",
+      "mozRequestFullScreen",
+      "msRequestFullscreen",
+    ];
+    for (const method of requestFullScreenMethods) {
+      if (playerContainer[method]) {
+        playerContainer[method]();
+        break;
+      }
     }
+    isFullScrean.value = true;
+  } else {
+    document.exitFullscreen();
+    isFullScrean.value = false;
+    console.log(isFullScrean.value);
   }
 }
 function gotoHere(e: MouseEvent) {
@@ -662,31 +734,34 @@ function stopDragging(e: MouseEvent) {
   document.removeEventListener("mousemove", drag);
   document.removeEventListener("mouseup", stopDragging);
 }
-
+function smallwindow() {
+  videoPlayer.value.requestPictureInPicture();
+}
+function cineme() {
+  videoStore.isFullScreen = !videoStore.isFullScreen;
+}
+onBeforeUnmount(async () => {
+  if (store.isLoggedIn) {
+    await setWatch({
+      user_id: store.id,
+      video_id: props.data.vid,
+      watch_time: videoPlayer.value.currentTime,
+    });
+  }
+  return;
+});
+const handleFullscreenChange = () => {
+  isFullScrean.value = !!document.fullscreenElement;
+};
 onUnmounted(() => {
   clearInterval(timer);
   hls.destroy();
+  document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  videoPlayer.value = null;
 });
 </script>
 
 <style lang="scss">
-.mini-video-container {
-  position: fixed;
-  bottom: 19px;
-  right: 13px;
-  border-radius: 5px;
-  width: 362px;
-  height: 200px;
-  border: 1px solid #ccc;
-  background-color: #000;
-  z-index: 999000;
-  overflow: hidden;
-  video {
-    width: 300px;
-    height: 169px;
-  }
-}
-
 .danmanku_type_set {
   display: flex;
   flex-direction: column;
@@ -714,9 +789,13 @@ onUnmounted(() => {
   .video-box {
     width: 100%;
     position: relative;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     video {
       width: 100%;
-      height: 600px;
+      object-fit: contain;
     }
     .danmaku {
       visibility: visible;
@@ -744,6 +823,20 @@ onUnmounted(() => {
       100% {
         right: 100%;
         transform: translate(0, 0);
+      }
+    }
+    .danmaku-top {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: danmankuTopAnimate linear 10s;
+    }
+    @keyframes danmankuTopAnimate {
+      0% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
       }
     }
     .paused {

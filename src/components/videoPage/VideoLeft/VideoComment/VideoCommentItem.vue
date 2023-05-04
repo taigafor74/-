@@ -9,6 +9,7 @@
       <div class="main-comment-box">
         <div class="user-info">
           <div class="user-name">{{ props.item?.uname }}</div>
+          <div class="report" @click="handleReport">投诉</div>
         </div>
         <div class="reply">
           <span class="reply-content">
@@ -79,6 +80,27 @@
       @commentPosted="addReply"
     ></VideoCommentInput>
     <div class="bottom-line"></div>
+    <el-dialog v-model="showReport" title="请说明举报原因">
+      <div>
+        <el-input
+          v-model="textarea"
+          autosize
+          type="textarea"
+          placeholder="请输入举报理由"
+        />
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+          "
+        >
+          <el-button type="primary" @click="submitReport">提交</el-button>
+          <el-button type="warning" @click="resetReport">重置</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -89,6 +111,7 @@ import { useCommentStore } from "@/stores/comment";
 import { timeAgo } from "@/utils/getTime";
 import { getReply } from "@/api/comment";
 import { defineProps, ref, onMounted, watchEffect } from "vue";
+import { setReport } from "@/api/report";
 import { useUserStore } from "@/stores/user";
 import { getCommentLike, deleteLike, setLike } from "@/api/like";
 import { ArrowDown, ArrowUp } from "@element-plus/icons-vue";
@@ -103,6 +126,38 @@ const likeSvg = ref(null);
 const bLike = ref(false);
 const likeCount = ref(0);
 const isShowReply = ref(false);
+const showReport = ref(false);
+const textarea = ref("");
+const handleReport = () => {
+  if (userStore.isLoggedIn) {
+    textarea.value = "";
+    showReport.value = true;
+  } else {
+    ElMessage.error("请先登录");
+  }
+};
+const submitReport = async () => {
+  const form = {
+    reporter_id: userStore.id,
+    reported_type: "comment",
+    reported_id: props.item.user_id,
+    reason: textarea.value,
+    report_target_id: props.item.comment_id,
+  };
+  const res = await setReport(form);
+  if (res.success == true) {
+    ElMessage.success("举报成功");
+    textarea.value = "";
+    showReport.value = false;
+  } else {
+    ElMessage.error("举报失败");
+    textarea.value = "";
+    showReport.value = false;
+  }
+};
+const resetReport = () => {
+  textarea.value = "";
+};
 const props = defineProps({
   item: Object,
   currentActiveComment: [String, Number],
@@ -205,6 +260,12 @@ const reply = (parrent_id, replyToId = null, uname, replyToWho = null, id) => {
         font-size: 14px;
         margin-bottom: 4px;
         padding-top: 5px;
+        display: flex;
+        justify-content: space-between;
+        .report {
+          cursor: pointer;
+          color: rgb(130, 29, 192);
+        }
         .user-name {
           font-weight: 500;
           margin-right: 5px;

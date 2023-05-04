@@ -6,9 +6,9 @@
           {{ chartStore.time
           }}{{ chartStore.item[chartStore.currentIndex - 1].name }}数据
         </div>
-        <div class="export">导出数据</div>
+        <div class="export" @click="exportToExcel">导出数据</div>
       </div>
-      <div ref="chartRef" style="width: 100%; height: 100%" id="main"></div>
+      <div ref="chartRef" style="width: 100%; height: 300px" id="main"></div>
     </div>
   </div>
 </template>
@@ -19,6 +19,7 @@ import * as echarts from "echarts";
 import { useUserStore } from "@/stores/user";
 import { useChartStore } from "@/stores/userchart";
 import { getCountFollowers } from "@/api/follow";
+import * as XLSX from "xlsx";
 import { getCountLikes, getTotalLikes } from "@/api/like";
 import { getWatchChart, getTotalWatch } from "@/api/watch";
 import { getCommentsChart, getTotalComment } from "@/api/comment";
@@ -93,6 +94,24 @@ const fetchData = async (followedId: number, type) => {
     }
   } catch (error) {}
 };
+const exportToExcel = () => {
+  const fileName = `用户核心数据-${chartStore.time}${
+    chartStore.item[chartStore.currentIndex - 1].name
+  }.xlsx`; // 您可以自定义文件名
+  const chartData = data.value.map((item) => {
+    const date = new Date(item.date);
+    const dateString = date.toLocaleDateString();
+    const key = Object.keys(item)[1];
+    return {
+      date: dateString,
+      [key]: item[key],
+    };
+  });
+  const ws = XLSX.utils.json_to_sheet(chartData); // 将 JSON 数据转换为表格数据
+  const wb = XLSX.utils.book_new(); // 创建新的工作簿
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1"); // 将表格数据添加到工作簿
+  XLSX.writeFile(wb, fileName); // 将工作簿保存为文件并下载
+};
 watch(
   () => chartStore.time,
   async (newVal) => {
@@ -132,7 +151,6 @@ const initChart = (data) => {
     tooltip: {
       trigger: "axis",
       triggerOn: "mousemove",
-      alwaysShowContent: true,
       position: function (pt) {
         return [pt[0], 130];
       },

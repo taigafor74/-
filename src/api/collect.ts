@@ -33,3 +33,10 @@ export function getCollectionVideo(id) {
     return res.data.data;
   });
 }
+export function getVideoCollectChart(id, type) {
+  return request
+    .get(`/collect/getVideoCollectChart/${type}/${id}`)
+    .then((res) => {
+      return res.data.data;
+    });
+}

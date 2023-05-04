@@ -43,3 +43,8 @@ export function getTotalLikes(id) {
     return res.data.data;
   });
 }
+export function getVideoLikesChart(id, type) {
+  return request.get(`/likes/getVideoLikesChart/${type}/${id}`).then((res) => {
+    return res.data.data;
+  });
+}

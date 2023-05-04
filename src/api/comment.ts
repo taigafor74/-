@@ -60,3 +60,15 @@ export function commentDelete(id) {
     return res.data;
   });
 }
+export function getTotalVideoComment(id) {
+  return request.get(`/comment/getTotalVideoComment/${id}`).then((res) => {
+    return res.data.data;
+  });
+}
+export function getVideoCommentsChart(id, type) {
+  return request
+    .get(`/comment/getVideoCommentsChart/${type}/${id}`)
+    .then((res) => {
+      return res.data.data;
+    });
+}

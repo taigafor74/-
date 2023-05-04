@@ -41,7 +41,7 @@
               fill="#aeaeae"
             ></path>
           </svg>
-          56
+          {{ props.item.danmacount }}
         </div>
       </div>
     </div>

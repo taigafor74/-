@@ -39,19 +39,26 @@
       </div>
       <div class="btn">
         <el-button @click="edit">编辑</el-button>
-        <el-button>数据</el-button>
+        <el-button @click="dataview">数据</el-button>
       </div>
     </div>
   </div>
   <el-dialog v-model="showDialog" destroy-on-close>
     <UploadForm />
   </el-dialog>
+  <el-dialog v-model="showData" destroy-on-close>
+    <VideoDataView />
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, defineProps, watchEffect, computed } from "vue";
 import UploadForm from "./UploadForm.vue";
+import VideoDataView from "./VideoDataView.vue";
 import { useUploadStore } from "@/stores/upload";
+import { getTotalVideoComment } from "@/api/comment";
+import { useVideoChartStore } from "@/stores/videochart";
+const videochart = useVideoChartStore();
 const store = useUploadStore();
 const baseUrl = "http://localhost:3000/videoImg/";
 const status = ref("(待审核)");
@@ -62,12 +69,28 @@ const props = defineProps({
   },
 });
 const showDialog = ref(false);
-const edit = (item) => {
+const showData = ref(false);
+const edit = () => {
   store.resetAll();
   store.isEdit = true;
   showDialog.value = true;
   store.editForm = props.item;
   //   store.editForm.img = `http://localhost:3000/videoImg/${props.item.img}`;
+};
+const dataview = async () => {
+  videochart.resetAll();
+  const commentTotal = await getTotalVideoComment(props.item.vid);
+  showData.value = true;
+  videochart.vid = props.item.vid;
+  videochart.form = props.item;
+  videochart.item = [
+    { name: "新增点赞", index: 1, num: 0, origin: props.item.likecount },
+    { name: "新增评论", index: 2, num: 0, origin: commentTotal },
+    { name: "新增播放", index: 3, num: 0, origin: props.item.playcount },
+    { name: "新增收藏", index: 4, num: 0, origin: props.item.collectcount },
+    { name: "新增弹幕", index: 5, num: 0, origin: props.item.danmacount },
+  ];
+  //   console.log(commentTotal);
 };
 watchEffect(() => {
   if (props.item) {

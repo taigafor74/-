@@ -56,7 +56,7 @@
       </span>
     </div>
     <div class="right">
-      <div class="report">
+      <div class="report" @click="handleReport">
         <svg
           width="24"
           height="24"
@@ -83,6 +83,27 @@
         稿件投诉
       </div>
     </div>
+    <el-dialog v-model="showReport" title="请说明举报原因">
+      <div>
+        <el-input
+          v-model="textarea"
+          autosize
+          type="textarea"
+          placeholder="请输入举报理由"
+        />
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+          "
+        >
+          <el-button type="primary" @click="submitReport">提交</el-button>
+          <el-button type="warning" @click="resetReport">重置</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -91,6 +112,7 @@ import { ref, watchEffect, defineProps, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { ElMessage } from "element-plus";
+import { setReport } from "@/api/report";
 import { setLike, getLike, deleteLike } from "@/api/like";
 import { setCollect, getCollect, deleteCollect } from "@/api/collect";
 const likecount = ref(0);
@@ -111,7 +133,38 @@ const props = defineProps({
     require: true,
   },
 });
-
+const showReport = ref(false);
+const textarea = ref("");
+const handleReport = () => {
+  if (store.isLoggedIn) {
+    textarea.value = "";
+    showReport.value = true;
+  } else {
+    ElMessage.error("请先登录");
+  }
+};
+const submitReport = async () => {
+  const form = {
+    reporter_id: store.id,
+    reported_type: "video",
+    reported_id: props.data.user_id,
+    reason: textarea.value,
+    report_target_id: props.data.vid,
+  };
+  const res = await setReport(form);
+  if (res.success == true) {
+    ElMessage.success("举报成功");
+    textarea.value = "";
+    showReport.value = false;
+  } else {
+    ElMessage.error("举报失败");
+    textarea.value = "";
+    showReport.value = false;
+  }
+};
+const resetReport = () => {
+  textarea.value = "";
+};
 watchEffect(() => {
   if (props.data.likecount) {
     likecount.value = props.data.likecount;

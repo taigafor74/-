@@ -19,3 +19,8 @@ export function getTotalWatch(id) {
     return res.data.data;
   });
 }
+export function getVideoWatchChart(id, type) {
+  return request.get(`/watch/getVideoWatchChart/${type}/${id}`).then((res) => {
+    return res.data.data;
+  });
+}
