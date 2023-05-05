@@ -2,12 +2,6 @@
   <div class="hotbar"></div>
   <div class="main-con">
     <div class="top-select-card">
-      <div class="top-select-card-left message">
-        <img src="@/assets/icon/动态.png" />动态
-      </div>
-      <div class="top-select-card-left hot">
-        <img src="@/assets/icon/热门.png" />热门
-      </div>
       <div class="top-select-card-middle"></div>
       <div class="top-select-card-right">
         <button v-for="item in btnArr" @click="goto(item.query)">
@@ -128,23 +122,23 @@ const goto = (query) => {
   margin-left: 240px;
   .top-select-card {
     display: flex;
-    z-index: 99;
+    z-index: 9;
     width: 100%;
-    padding: 0.820152vw 0.76397vw;
+    padding: 14px 13px;
     font-size: 0.820152vw;
     position: fixed;
     background: #0f0f0f;
     .top-select-card-left {
       cursor: pointer;
       display: flex;
-      width: 4.686585vw;
-      height: 1.640305vw;
-      margin-bottom: 0.220152vw;
+      width: 80px;
+      height: 28px;
+      margin-bottom: 3.6px;
       letter-spacing: 0.117165vw;
       align-items: center;
       img {
-        width: 1.288811vw;
-        height: 1.288811vw;
+        width: 22px;
+        height: 22px;
         margin-right: 0.292912vw;
       }
     }
@@ -161,7 +155,7 @@ const goto = (query) => {
       button {
         color: white;
         background: #0f0f0f;
-        width: 4.171646vw;
+        width: 72px;
         text-align: center;
         border: 0.058582vw solid white;
         font-size: 1.037317vw;

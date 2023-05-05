@@ -1,32 +1,59 @@
 <template>
   <div class="user-main-left-container">
     <div class="head">
-      <p>我的视频</p>
+      <p>{{ who }}的视频</p>
       <div class="head-tab">
-        <div>最新发布</div>
-        <div>最多播放</div>
-        <div>最多收藏</div>
+        <div @click="sortTime">最新发布</div>
+        <div @click="sortPlay">最多播放</div>
       </div>
       <div class="btn">
-        <button>更多</button>
+        <button @click="gptp">更多</button>
       </div>
     </div>
     <div class="stuff" v-if="isEmpty">暂无视频</div>
     <div class="main">
-      <UserVideoCard v-for="item in data" :item="item"></UserVideoCard>
+      <UserVideoCard v-for="item in sortedData" :item="item"></UserVideoCard>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import UserVideoCard from "@/components/UserPage/UserVideoCard.vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import UserLike from "./UserLike.vue";
-import { onMounted, ref, defineProps, watchEffect } from "vue";
+import { onMounted, ref, defineProps, watchEffect, watch } from "vue";
+import { useUserStore } from "@/stores/user";
+const store = useUserStore();
+const router = useRouter();
+const who = ref("TA");
+const route = useRoute();
 const props = defineProps({
   data: Array,
 });
 const isEmpty = ref(false);
+onMounted(() => {
+  if (store.isLoggedIn) {
+    if (store.id == route.params.id) {
+      who.value = "我";
+    } else {
+      who.value = "TA";
+    }
+  }
+});
+const sortedData = ref([...props.data]);
+
+const sortTime = () => {
+  sortedData.value = [...props.data].sort((a, b) => {
+    return new Date(b.upload_date) - new Date(a.upload_date);
+  });
+};
+
+const sortPlay = () => {
+  sortedData.value = [...props.data].sort((a, b) => {
+    return b.playcount - a.playcount;
+  });
+};
+
 watchEffect(() => {
   if (props.data.length == 0) {
     isEmpty.value = true;
@@ -34,6 +61,18 @@ watchEffect(() => {
     isEmpty.value = false;
   }
 });
+watch(
+  () => props.data,
+  (newData) => {
+    sortedData.value = [...newData];
+  }
+);
+const gptp = async () => {
+  await router.push({
+    path: `/user/${route.params.id}/video`,
+  });
+  location.reload();
+};
 </script>
 
 <style lang="scss" scoped>

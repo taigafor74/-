@@ -10,8 +10,13 @@
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { onMounted } from "vue";
+import { useSocketStore } from "@/stores/socket";
+const useSocket = useSocketStore();
 import SideBar from "@/components/ReplyPage/SideBar.vue";
+onMounted(() => {
+  useSocket.isHidden = true;
+});
 </script>
 
 <style lang="scss" scoped>

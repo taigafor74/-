@@ -21,3 +21,23 @@ export function updateAvatar(formData) {
       return res.data;
     });
 }
+export function getInfo(id) {
+  return request.get(`/user/getInfo/${id}`).then((res) => {
+    return res.data;
+  });
+}
+export function updateDesc(id, desc) {
+  return request.put(`/user/updateDesc`, { id, desc }).then((res) => {
+    return res.data;
+  });
+}
+export function updateInfo(form) {
+  return request.put(`/user/updateInfo`, form).then((res) => {
+    return res.data;
+  });
+}
+export function edit(id, edit) {
+  return request.put(`/user/edit/${id}`, { edit }).then((res) => {
+    return res.data;
+  });
+}

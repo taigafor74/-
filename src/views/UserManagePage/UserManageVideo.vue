@@ -22,7 +22,7 @@ const data = ref([]);
 onMounted(async () => {
   const res = await getVideoAllByUser(store.id);
   data.value = res.data;
-  manageStore.index = 2;
+  manageStore.index = "2";
 });
 </script>
 

@@ -19,7 +19,7 @@
           <img src="@/assets/icon/右箭头.png" />
         </span>
       </div>
-      <div class="movement-item">
+      <div class="movement-item" @click="goManage">
         <span> <img src="@/assets/icon/内容管理.png" /></span>
         <span>投稿管理</span>
         <span>
@@ -58,10 +58,16 @@ const disBox = () => {
 function logOut() {
   store.logout();
 }
-function gotoMain() {
+function goManage() {
   router.push({
+    path: `/manage/${store.id}/video`,
+  });
+}
+async function gotoMain() {
+  await router.push({
     path: `/user/${store.id}/main`,
   });
+  location.reload();
 }
 function goFans() {
   router.push({

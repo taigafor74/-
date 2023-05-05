@@ -24,6 +24,8 @@ import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import { useCommentStore } from "@/stores/comment";
 import { postComment } from "@/api/comment";
+import { useSenserStore } from "@/stores/senser";
+const senserStore = useSenserStore();
 const route = useRoute();
 const commentStore = useCommentStore();
 const store = useUserStore();
@@ -52,10 +54,18 @@ function onFocus() {
 const submitComment = async () => {
   if (store.isLoggedIn) {
     if (comment.value == "") {
+      console.log(senserStore.data);
+
       ElMessage.error("评论不能为空");
       return;
     }
     if (commentStore.parrentId) {
+      senserStore.data.forEach((item) => {
+        if (item.word == comment.value) {
+          console.log(1);
+          comment.value = item.word.replace(/[\u4e00-\u9fa5]/g, "*");
+        }
+      });
       const res = await postComment(
         route.query.vid,
         store.id,
@@ -69,8 +79,12 @@ const submitComment = async () => {
       ElMessage.success(res.message);
       emit("commentPosted", res.data);
     } else {
-      console.log(orignuid.value);
-
+      senserStore.data.forEach((item) => {
+        if (item.word == comment.value) {
+          console.log(1);
+          comment.value = item.word.replace(/[\u4e00-\u9fa5]/g, "*");
+        }
+      });
       const res = await postComment(
         route.query.vid,
         store.id,

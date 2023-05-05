@@ -7,7 +7,13 @@
       <div class="user-header-info">
         <div class="user-header-info-name">{{ uname }}</div>
         <div class="user-header-info-introduction">
-          <input placeholder="编辑个性签名" maxlength="60" />
+          <input
+            placeholder="编辑个性签名"
+            maxlength="60"
+            v-model="textarea"
+            :disabled="!isMe"
+            @blur="handleBlur"
+          />
         </div>
       </div>
     </div>
@@ -42,19 +48,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onMounted } from "vue";
 import { useUserStore } from "@/stores/user";
 import { ElMessage } from "element-plus";
 import { ElMessageBox } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import type { UploadProps } from "element-plus";
+import { getInfo, updateDesc } from "@/api/user";
 import { updateAvatar } from "@/api/user";
+import { useRoute } from "vue-router";
+const route = useRoute();
 const isUpload = ref(false);
 const dialogVisible = ref(false);
+const textarea = ref("");
 const customImg = ref<HTMLImageElement>();
 const imageUrl = ref("");
 const updateImg = ref("");
 const store = useUserStore();
+const isMe = ref(false);
+const handleBlur = async () => {
+  const res = await updateDesc(store.id, textarea.value);
+};
+onMounted(async () => {
+  const res = await getInfo(route.params.id);
+  textarea.value = res.data.desc;
+});
 const props = defineProps({
   userInfo: Object,
 });
@@ -76,6 +94,13 @@ watchEffect(() => {
     uname.value = props.userInfo.uname;
     if (props.userInfo.avatar) {
       imgUrl.value = `http://localhost:3000/avatar/${props.userInfo.avatar}`;
+    }
+  }
+  if (store.isLoggedIn) {
+    if (store.id) {
+      if (store.id === props.userInfo.id) {
+        isMe.value = true;
+      }
     }
   }
 });

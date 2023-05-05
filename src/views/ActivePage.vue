@@ -26,7 +26,7 @@ onMounted(async () => {
   width: 100%;
   height: calc(100vh - 56px);
   padding: 20px;
-  background: #3d3c3c;
+  background: #0f0f0f;
   display: flex;
   justify-content: center;
 }

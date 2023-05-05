@@ -7,7 +7,7 @@
       <div class="right">
         <div class="name">
           <span class="r-name">{{ uname }}</span>
-          <span class="r-mail">发消息</span>
+          <!-- <span class="r-mail">发消息</span> -->
         </div>
         <div class="intro">
           {{ desc }}

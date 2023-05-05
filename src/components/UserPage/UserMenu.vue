@@ -4,11 +4,15 @@
       <div
         class="user-menu-left-item"
         @mouseenter="test($event, item.index)"
-        @click="routerto(item.index, item.routerPath, userId)"
+        @click="
+          isMenuItemClickable(item.index) &&
+            routerto(item.index, item.routerPath, userId)
+        "
         @mouseleave="resetCurosor"
         v-for="item in userMenuArr"
         :key="item.index"
         ref="userMenuLeftItem"
+        :class="{ 'disabled-menu-item': !isMenuItemClickable(item.index) }"
       >
         <img :src="getAssetsImages(item.iconSrc)" alt="" />
         <span>{{ item.title }}</span>
@@ -16,8 +20,8 @@
       <div ref="cursor" class="user-menu-cursor"></div>
     </div>
     <div class="user-menu-center">
-      <input placeholder="搜索视频、动态" />
-      <img src="@/assets/icon/搜索.png" alt="" />
+      <input placeholder="搜索视频、动态" v-model="keyword" />
+      <img src="@/assets/icon/搜索.png" alt="" @click="goSearch" />
     </div>
     <div class="user-menu-right">
       <div class="user-menu-data spc" @click="goFollow">
@@ -46,8 +50,34 @@ import { useRouter, useRoute } from "vue-router";
 import { getFans, getFollows } from "@/api/follow";
 import { getTotalLikes } from "@/api/like";
 import { getTotalWatch } from "@/api/watch";
+import { getInfo } from "@/api/user";
 const likecount = ref(0);
 const watchcount = ref(0);
+const componentVisible = ref([false, false, false, false]);
+const isMe = ref(false);
+
+// Add this function to determine if a menu item is clickable
+const isMenuItemClickable = (index: number) => {
+  if (isMe.value) {
+    return true;
+  }
+  // Adjust the index based on componentVisible array
+  // 0: 主页 (UserMainLeft), 1: 动态 (UserLike), 2: 投稿, 3: 收藏 (UserCollect)
+  const visibilityIndex = index === 2 ? 0 : index === 3 ? 3 : -1;
+  if (visibilityIndex !== -1) {
+    return componentVisible.value[visibilityIndex];
+  }
+  return true;
+};
+
+// Add this function to set component visibility
+const setComponentVisibility = (edit: string) => {
+  if (!isMe.value) {
+    for (let i = 0; i < edit.length; i++) {
+      componentVisible.value[i] = edit[i] === "1";
+    }
+  }
+};
 type userMenu = {
   title: string;
   iconSrc: any;
@@ -67,6 +97,7 @@ const router = useRouter();
 const route = useRoute();
 const userId = route.params.id;
 const cursor = ref<HTMLElement | any>(null);
+const keyword = ref("");
 let currentIndex: any = null;
 let userMenuLeftItem = ref<HTMLElement | any>(null);
 async function getData() {
@@ -78,7 +109,12 @@ async function getData() {
   fans.value = fansRes.length;
 }
 getData();
-
+const goSearch = async () => {
+  await router.push({
+    path: `/usersearch/${userId}/${keyword.value}/user`,
+  });
+  location.reload();
+};
 watch(
   () => route.params.id,
   async () => {
@@ -95,12 +131,14 @@ const goFans = () => {
     path: `/user/${route.params.id}/follow/fans`,
   });
 };
-onMounted(() => {
+onMounted(async () => {
   let str = route.path;
   str = str.split("/");
   str = str[str.length - 1];
   currentIndex = enumIndex[str];
   cursorGoto(currentIndex);
+  const res = await getInfo(route.params.id);
+  setComponentVisibility(res.data.edit);
 
   if (userMenuLeftItem.value && userMenuLeftItem.value[currentIndex]) {
     userMenuLeftItem.value[currentIndex].classList.add("cursor-active");
@@ -135,7 +173,7 @@ const userMenuArr: userMenu[] = reactive([
     title: "设置",
     iconSrc: "../../assets/icon/设置.png",
     index: 4,
-    routerPath: "userVideo",
+    routerPath: "userSetting",
   },
 ]);
 
@@ -232,6 +270,7 @@ function resetCurosor() {
     img {
       width: 1.054482vw;
       height: 1.054482vw;
+      cursor: pointer;
     }
   }
   .user-menu-right {

@@ -152,7 +152,7 @@
             </svg>
           </span>
         </div>
-        <div class="danmaku-setting">
+        <!-- <div class="danmaku-setting">
           <span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +168,7 @@
             </svg>
           </span>
           <div class="danmaku-setting-box"></div>
-        </div>
+        </div> -->
         <div class="danmaku-send">
           <el-popover placement="top" :width="170" trigger="click">
             <template #reference>
@@ -287,6 +287,9 @@ const videoStyles = computed(() => ({
 
 let userDanmaku = ref("");
 const danmakuArr = reactive([]);
+import { useSenserStore } from "@/stores/senser";
+const senserStore = useSenserStore();
+const isSenser = ref(false);
 const danmakuPool = {
   pool: [] as any,
   activePool: [] as any,
@@ -348,31 +351,39 @@ async function sendDanmaku() {
       ElMessage.error("弹幕内容不能为空");
       return;
     } else {
-      const form = {
-        video_id: props.data.vid,
-        user_id: store.id,
-        content: userDanmaku.value,
-        timestamp: videoPlayer.value.currentTime,
-        color: color1.value,
-        type: radio1.value,
-      };
-      const res = await postDanmaku(form);
-      if (res.error) {
-        ElMessage.error(res.message);
-        return;
-      } else {
-        ElMessage.success(res.message);
-        danmakuArr.push({
-          text: userDanmaku.value,
-          time: videoPlayer.value.currentTime,
+      senserStore.data.forEach((item) => {
+        if (item.word == userDanmaku.value) {
+          ElMessage.error("请勿发送敏感词汇");
+          isSenser.value = true;
+        }
+      });
+      if (!isSenser.value) {
+        const form = {
+          video_id: props.data.vid,
+          user_id: store.id,
+          content: userDanmaku.value,
+          timestamp: videoPlayer.value.currentTime,
           color: color1.value,
           type: radio1.value,
-          fontSize: 20,
-          flag: false,
-          isSend: true,
-        });
+        };
+        const res = await postDanmaku(form);
+        if (res.error) {
+          ElMessage.error(res.message);
+          return;
+        } else {
+          ElMessage.success(res.message);
+          danmakuArr.push({
+            text: userDanmaku.value,
+            time: videoPlayer.value.currentTime,
+            color: color1.value,
+            type: radio1.value,
+            fontSize: 20,
+            flag: false,
+            isSend: true,
+          });
+        }
       }
-
+      isSenser.value = false;
       userDanmaku.value = "";
     }
   } else {

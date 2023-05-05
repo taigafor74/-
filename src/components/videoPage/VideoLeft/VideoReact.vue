@@ -38,15 +38,17 @@
         </svg>
         <span>{{ collectcount }}</span>
       </span>
+    </div>
+    <div class="right">
       <span class="item">
         <svg
           ref="shareSvg"
-          @click="submitShare"
+          @click="submitShare1"
           width="28"
           height="28"
           viewBox="0 0 28 28"
           xmlns="http://www.w3.org/2000/svg"
-          class="icon"
+          fill="white"
         >
           <path
             d="M12.6058 10.3326V5.44359C12.6058 4.64632 13.2718 4 14.0934 4C14.4423 4 14.78 4.11895 15.0476 4.33606L25.3847 12.7221C26.112 13.3121 26.2087 14.3626 25.6007 15.0684C25.5352 15.1443 25.463 15.2144 25.3847 15.2779L15.0476 23.6639C14.4173 24.1753 13.4791 24.094 12.9521 23.4823C12.7283 23.2226 12.6058 22.8949 12.6058 22.5564V18.053C7.59502 18.053 5.37116 19.9116 2.57197 23.5251C2.47607 23.6489 2.00031 23.7769 2.00031 23.2122C2.00031 16.2165 3.90102 10.3326 12.6058 10.3326Z"
@@ -54,8 +56,6 @@
         </svg>
         <span>{{ sharecount }}</span>
       </span>
-    </div>
-    <div class="right">
       <div class="report" @click="handleReport">
         <svg
           width="24"
@@ -104,6 +104,27 @@
         </div>
       </div>
     </el-dialog>
+    <el-dialog v-model="dialogTableVisible" :draggable="true">
+      <div>
+        <el-input
+          v-model="textarea2"
+          autosize
+          type="textarea"
+          placeholder="说点什么吧"
+        />
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+          "
+        >
+          <el-button type="primary" @click="submitShare">提交</el-button>
+          <el-button type="warning" @click="resetShare">重置</el-button>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -115,6 +136,8 @@ import { ElMessage } from "element-plus";
 import { setReport } from "@/api/report";
 import { setLike, getLike, deleteLike } from "@/api/like";
 import { setCollect, getCollect, deleteCollect } from "@/api/collect";
+import ActiveInput from "@/components/ActivePage/ActiveInput.vue";
+import { shareVideo } from "@/api/active";
 const likecount = ref(0);
 const collectcount = ref(0);
 const sharecount = ref(0);
@@ -124,9 +147,11 @@ const collectSvg = ref(null);
 const shareSvg = ref(null);
 const store = useUserStore();
 const color = ref("rgb(150, 11, 201)");
+const textarea2 = ref("");
 const bLike = ref(false);
 const bCollect = ref(false);
 const bShare = ref(false);
+const dialogTableVisible = ref(false);
 const props = defineProps({
   data: {
     type: Object,
@@ -220,8 +245,33 @@ function submitCollect() {
     ElMessage.error("请先登录");
   }
 }
-function submitShare() {
-  toggle(shareSvg, bShare);
+const submitShare = async () => {
+  const form = {
+    active_sender_id: store.id,
+    activity_type: "origin",
+    active_content: textarea2.value,
+    repost_video_id: props.data.vid,
+  };
+  const res = await shareVideo(form);
+  if (res.success == 200) {
+    ElMessage.success("分享成功");
+    textarea2.value = "";
+    dialogTableVisible.value = false;
+  } else {
+    ElMessage.error("分享失败");
+    textarea2.value = "";
+    dialogTableVisible.value = false;
+  }
+};
+const resetShare = () => {
+  textarea2.value = "";
+};
+function submitShare1() {
+  if (store.isLoggedIn) {
+    dialogTableVisible.value = true;
+  } else {
+    ElMessage.error("请先登录");
+  }
 }
 function toggle(e, t) {
   if (!store.isLoggedIn) {
@@ -279,6 +329,20 @@ function toggle(e, t) {
     align-items: center;
     color: #d8d8d8;
     height: 100%;
+    .item {
+      display: flex;
+      align-items: center;
+      margin-right: 18px;
+      span {
+      }
+      svg {
+        margin-right: 10px;
+        width: 36px;
+        height: 36px;
+        fill: #d8d8d8;
+        cursor: pointer;
+      }
+    }
     .report {
       height: 24px;
       display: inline-flex;

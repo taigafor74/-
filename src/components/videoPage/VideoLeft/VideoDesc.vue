@@ -11,7 +11,7 @@
         ref="tagList"
         :style="{ height: show ? '100%' : '36px' }"
       >
-        <li v-for="item in data.tags">{{ item }}</li>
+        <li @click="goto(item)" v-for="item in data.tags">{{ item }}</li>
       </ul>
       <div
         class="arrow"
@@ -39,6 +39,8 @@
 
 <script setup lang="ts">
 import { defineProps, watchEffect, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+const router = useRouter();
 const data = ref([]);
 const props = defineProps({
   data: {
@@ -67,6 +69,11 @@ const tagList: any = ref(null);
 function showAllTag() {
   show.value = !show.value;
 }
+const goto = (item) => {
+  router.push({
+    path: `/search/${item}/video`,
+  });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -98,6 +105,7 @@ function showAllTag() {
       height: 32px;
       overflow: hidden;
       li {
+        cursor: pointer;
         display: inline-flex;
         align-items: center;
         justify-content: center;

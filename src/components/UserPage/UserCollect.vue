@@ -2,9 +2,6 @@
   <div class="user-collect-con">
     <div class="header">
       <p>收藏的视频</p>
-      <div class="btn">
-        <el-button>更多</el-button>
-      </div>
     </div>
     <div class="stuff" v-if="isEmpty">暂无视频</div>
     <div class="video-part">

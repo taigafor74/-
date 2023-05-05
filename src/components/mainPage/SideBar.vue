@@ -139,7 +139,7 @@
 
     <div class="sidebar-list-card">
       <label>探索发现</label>
-      <div class="sidebar-list-item" @click="gotoarea(music)">
+      <div class="sidebar-list-item" @click="gotoarea(life)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -162,7 +162,7 @@
             </g>
           </svg>
         </div>
-        <div class="sidebar-list-item-intro">热门影片</div>
+        <div class="sidebar-list-item-intro">生活</div>
       </div>
       <div class="sidebar-list-item" @click="gotoarea(music)">
         <div class="sidebar-list-item-img-box">
@@ -239,7 +239,7 @@
         </div>
         <div class="sidebar-list-item-intro">游戏</div>
       </div>
-      <div class="sidebar-list-item" @click="gotoarea(life)">
+      <div class="sidebar-list-item" @click="gotoarea(tech)">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -262,7 +262,7 @@
             </g>
           </svg>
         </div>
-        <div class="sidebar-list-item-intro">生活</div>
+        <div class="sidebar-list-item-intro">科技</div>
       </div>
       <div class="sidebar-list-item" @click="gotoarea(fashion)">
         <div class="sidebar-list-item-img-box">
@@ -292,7 +292,7 @@
     </div>
 
     <div class="sidebar-list-card">
-      <div class="sidebar-list-item" @click="goto">
+      <!-- <div class="sidebar-list-item" @click="goto">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -316,8 +316,8 @@
           </svg>
         </div>
         <div class="sidebar-list-item-intro">设定</div>
-      </div>
-      <div class="sidebar-list-item" @click="goto">
+      </div> -->
+      <div class="sidebar-list-item" @click="gotore">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -342,7 +342,7 @@
         </div>
         <div class="sidebar-list-item-intro">检举记录</div>
       </div>
-      <div class="sidebar-list-item" @click="goto">
+      <!-- <div class="sidebar-list-item" @click="goto">
         <div class="sidebar-list-item-img-box">
           <svg
             viewBox="0 0 24 24"
@@ -391,7 +391,7 @@
           </svg>
         </div>
         <div class="sidebar-list-item-intro">提供意见</div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -407,6 +407,7 @@ const collect = "collect";
 const music = "music";
 const animation = "animation";
 const game = "game";
+const tech = "tech";
 const life = "life";
 const fashion = "fashion";
 const router = useRouter();
@@ -437,6 +438,11 @@ const gotoarea = (query) => {
     query: {
       query,
     },
+  });
+};
+const gotore = () => {
+  router.push({
+    path: `/report`,
   });
 };
 async function goto() {

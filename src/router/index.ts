@@ -35,6 +35,11 @@ const router = createRouter({
           name: "replyComment",
           component: () => import("../views/ReplyPage/ReplyCommentPage.vue"),
         },
+        {
+          path: "system",
+          name: "replySystem",
+          component: () => import("../views/ReplyPage/ReplySystemPage.vue"),
+        },
       ],
     },
     {
@@ -78,6 +83,11 @@ const router = createRouter({
       component: () => import("../views/ActivePage.vue"),
     },
     {
+      path: "/report",
+      name: "report",
+      component: () => import("../views/ReportPage.vue"),
+    },
+    {
       path: "/v/:query",
       name: "v",
       component: () => import("../views/VideoPartPage.vue"),
@@ -100,6 +110,23 @@ const router = createRouter({
       ],
     },
     {
+      path: "/usersearch/:id/:keyword",
+      name: "usersearch",
+      component: () => import("../views/UserSearchPage/UserSearchPage.vue"),
+      children: [
+        {
+          path: "user",
+          name: "userSearch",
+          component: () => import("../views/UserSearchPage/UserSearch.vue"),
+        },
+        {
+          path: "active",
+          name: "userAActive",
+          component: () => import("../views/UserSearchPage/ActiveSearch.vue"),
+        },
+      ],
+    },
+    {
       path: "/user/:id",
       component: () => import("../views/UserPage/UserPage.vue"),
       children: [
@@ -107,6 +134,11 @@ const router = createRouter({
           path: "video",
           name: "userVideo",
           component: () => import("../views/UserPage/UserVideoPage.vue"),
+        },
+        {
+          path: "setting",
+          name: "userSetting",
+          component: () => import("../views/UserPage/UserSettingPage.vue"),
         },
         {
           path: "main",

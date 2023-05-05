@@ -40,7 +40,7 @@
                 </div>
               </div>
             </div>
-            <VideoCard v-if="showVideoCard"></VideoCard>
+            <VideoCard v-if="showVideoCard" :item="props.item"></VideoCard>
             <RepostCard v-if="showRepostCard" :item="props.item" />
             <div class="icon-bottom">
               <div @click="share">
@@ -87,8 +87,8 @@ import RepostItem from "./RepostItem.vue";
 import { useUserStore } from "@/stores/user";
 import { ElMessage } from "element-plus";
 import { getActive } from "@/api/active";
-import { useRouter } from "vue-router";
 import { getActiveLike, deleteLike, setLike } from "@/api/like";
+import { useRouter } from "vue-router";
 const router = useRouter();
 const store = useUserStore();
 const showStuff = ref(false);
@@ -122,7 +122,9 @@ onMounted(async () => {
     if (props.item.active_target_id) {
       showRepostCard.value = true;
       await fetchRepostData(props.item.active_target_id, repostItems.value);
-      console.log(repostItems.value);
+    }
+    if (props.item.repost_video_id) {
+      showVideoCard.value = true;
     }
   }
 });

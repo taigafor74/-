@@ -12,12 +12,12 @@
     </div>
     <div class="bottom">
       <div class="item">
-        <span>ID</span>
-        <span>7474</span>
+        <span>用户名</span>
+        <span>{{ store.uname }}</span>
       </div>
       <div class="item">
         <span>生日</span>
-        <span>08-22</span>
+        <span>{{ new Date(bd).toLocaleDateString() }}</span>
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
         <el-radio-group v-model="form.resource">
           <el-radio label="男" />
           <el-radio label="女" />
-          <el-radio label="保密" />
+          <el-radio label="未知" />
         </el-radio-group>
       </el-form-item>
       <el-form-item label="简介">
@@ -55,9 +55,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="resetForm">重置</el-button>
-        <el-button type="primary" @click="dialogVisible = false">
-          提交
-        </el-button>
+        <el-button type="primary" @click="submit"> 提交 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -65,12 +63,27 @@
 
 <script setup lang="ts">
 import {} from "vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useUserStore } from "@/stores/user";
 import { ElMessageBox } from "element-plus";
+import { getInfo, updateInfo } from "@/api/user";
 
+const store = useUserStore();
 const dialogVisible = ref(false);
 import { reactive } from "vue";
-
+const data = ref([]);
+const bd = ref("");
+onMounted(async () => {
+  if (store.isLoggedIn) {
+    const res = await getInfo(store.id);
+    data.value = res.data;
+    bd.value = data.value.birthday;
+    form.name = store.uname;
+    form.date1 = new Date(bd.value).toLocaleDateString();
+    form.desc = data.value.desc;
+    form.resource = data.value.sex;
+  }
+});
 // do not use same name with ref
 const form = reactive({
   name: "",
@@ -78,7 +91,18 @@ const form = reactive({
   resource: "",
   desc: "",
 });
-
+const submit = async () => {
+  form.id = store.id;
+  const res = await updateInfo(form);
+  if (res.success == true) {
+    ElMessageBox.alert("修改成功");
+    dialogVisible.value = false;
+    location.reload();
+  } else {
+    ElMessageBox.alert("修改失败");
+    location.reload();
+  }
+};
 const onSubmit = () => {
   console.log("submit!");
 };

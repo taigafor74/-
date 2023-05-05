@@ -4,3 +4,8 @@ export function setReport(form) {
     return res.data;
   });
 }
+export function getReport(userId) {
+  return request.get(`/report/getReportByUser/${userId}`).then((res) => {
+    return res.data;
+  });
+}

@@ -30,3 +30,8 @@ export function getActiveByUserId(id) {
     return res.data.data;
   });
 }
+export function shareVideo(form) {
+  return request.post("/active/shareVideo", form).then((res) => {
+    return res.data;
+  });
+}

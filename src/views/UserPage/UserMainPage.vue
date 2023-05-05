@@ -1,9 +1,9 @@
 <template>
   <div class="user-main-page-container">
     <div class="test-main">
-      <UserMainLeft :data="data" />
-      <UserLike />
-      <UserCollect />
+      <UserMainLeft v-if="isMe || componentVisible[0]" :data="data" />
+      <UserLike v-if="isMe || componentVisible[1]" />
+      <UserCollect v-if="isMe || componentVisible[3]" />
     </div>
     <div class="sidebar" v-if="isShowSideBar">
       <UserSideBar />
@@ -20,10 +20,14 @@ import { getVideoByUser } from "@/api/video";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/user";
+import { getInfo } from "@/api/user";
 const store = useUserStore();
 const route = useRoute();
 const data = ref([]);
 const isShowSideBar = ref(false);
+const componentVisible = ref([false, false, false, false]);
+const isMe = ref(false);
+
 const getVideo = async () => {
   const res = await getVideoByUser(route.params.id);
   data.value = res.data;
@@ -31,15 +35,25 @@ const getVideo = async () => {
 const checkSideBar = () => {
   if (store.isLoggedIn) {
     if (store.id == route.params.id) {
+      isMe.value = true;
       isShowSideBar.value = true;
     }
   } else {
     return;
   }
 };
-onMounted(() => {
+const setComponentVisibility = (edit) => {
+  if (!isMe.value) {
+    for (let i = 0; i < edit.length; i++) {
+      componentVisible.value[i] = edit[i] === "1";
+    }
+  }
+};
+onMounted(async () => {
   getVideo();
   checkSideBar();
+  const res = await getInfo(route.params.id);
+  setComponentVisibility(res.data.edit);
 });
 </script>
 

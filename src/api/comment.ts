@@ -72,3 +72,8 @@ export function getVideoCommentsChart(id, type) {
       return res.data.data;
     });
 }
+export function getVideoTotalComment(id) {
+  return request.get(`/comment/getVideoTotalComment/${id}`).then((res) => {
+    return res.data.data;
+  });
+}

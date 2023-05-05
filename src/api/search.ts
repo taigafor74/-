@@ -5,3 +5,8 @@ export function getSearch(keyword) {
     return res.data;
   });
 }
+export function user(userId, keyword) {
+  return request.get(`/search/user/${userId}/${keyword}`).then((res) => {
+    return res.data;
+  });
+}

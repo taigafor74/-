@@ -2,18 +2,26 @@
   <div class="nav-bar">
     <div class="title">
       <span class="comment">评论</span>
-      <span class="number">1000</span>
+      <span class="number">{{ data }}</span>
     </div>
-    <div class="sort">
+    <!-- <div class="sort">
       <div class="hot">最热</div>
       <div class="part"></div>
       <div class="time">最新</div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import {} from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { getVideoTotalComment } from "@/api/comment";
+const data = ref(0);
+const route = useRoute();
+onMounted(async () => {
+  const res = await getVideoTotalComment(route.query.vid);
+  data.value = res;
+});
 </script>
 
 <style lang="scss" scoped>

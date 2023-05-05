@@ -5,14 +5,14 @@
       <div class="no" v-if="isEmpty">
         <div class="left">
           <div>暂无动态</div>
-          <div>发个动态吧</div>
+          <!-- <div>发个动态吧</div> -->
         </div>
         <div class="right">
-          <img src="@/assets/icon/紫箭头.png" />
+          <!-- <img src="@/assets/icon/紫箭头.png" /> -->
         </div>
       </div>
     </div>
-    <div style="padding-left: 20px"><UserSideBar /></div>
+    <div style="padding-left: 20px" v-if="isShowSideBar"><UserSideBar /></div>
   </div>
 </template>
 
@@ -22,7 +22,10 @@ import { getActiveByUserId } from "@/api/active";
 import ActiveCard from "@/components/ActivePage/ActiveCard.vue";
 import { useRoute } from "vue-router";
 import UserSideBar from "@/components/UserPage/UserSideBar.vue";
+import { useUserStore } from "@/stores/user";
+const store = useUserStore();
 const activeList = ref([]);
+const isShowSideBar = ref(false);
 const route = useRoute();
 const isEmpty = ref(false);
 onMounted(async () => {
@@ -30,6 +33,11 @@ onMounted(async () => {
   activeList.value = res;
   if (res.length == 0) {
     isEmpty.value = true;
+  }
+  if (store.isLoggedIn) {
+    if (route.params.id == store.id) {
+      isShowSideBar.value = true;
+    }
   }
 });
 </script>

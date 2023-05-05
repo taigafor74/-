@@ -4,12 +4,12 @@
       <div class="item-main">
         <div class="header">
           <div class="top">
-            <div class="avatar">
+            <div class="avatar" @click="goto">
               <div class="img">
                 <img :src="avatar" />
               </div>
             </div>
-            <div class="name">{{ uname }}</div>
+            <div class="name" @click="goto">{{ uname }}</div>
           </div>
           <!-- <div class="time">42分钟前</div> -->
         </div>
@@ -32,7 +32,7 @@
                 </div>
               </div>
             </div>
-            <VideoCard v-if="showVideoCard"></VideoCard>
+            <VideoCard v-if="showVideoCard" :item="item"></VideoCard>
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, defineProps } from "vue";
+import { ref, onMounted, defineProps, reactive } from "vue";
 import { getActive } from "@/api/active";
 import RepostItem from "./RepostItem.vue";
 import VideoCard from "./VideoCard.vue";
@@ -57,9 +57,14 @@ const content = ref("");
 const showStuff = ref(false);
 const showVideoCard = ref(false);
 const showRepostCard = ref(false);
+import { useRouter } from "vue-router";
+const router = useRouter();
 const imgList = ref([]);
+const item = reactive({ repost_video_id: 1 });
+const goto = () => {
+  router.push(`/user/${props.item.id}/main`);
+};
 onMounted(async () => {
-  console.log(props.item);
   const id = props.item.origin_active_id || props.item.active_id;
   const res = await getActive(id);
   avatar.value = `http://localhost:3000/avatar/${res[0].avatar}`;
@@ -72,12 +77,16 @@ onMounted(async () => {
       return `http://localhost:3000/activeImg/${item}`;
     });
   }
+  if (res[0].repost_video_id) {
+    item.repost_video_id = res[0].repost_video_id;
+    showVideoCard.value = true;
+  }
 });
 </script>
 
 <style lang="scss" scoped>
 .repost-con {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   background: rgb(27, 27, 27);
   padding: 10px;
   border-radius: 8px;
@@ -96,6 +105,7 @@ onMounted(async () => {
             width: 48px;
             margin-right: 10px;
             .img {
+              cursor: pointer;
               width: 48px;
               height: 48px;
               img {

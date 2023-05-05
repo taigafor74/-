@@ -37,7 +37,12 @@
     </div>
     <div class="main-header-right">
       <div class="bell" @click="gotoReply">
-        <el-badge :value="data.length" class="item">
+        <el-badge
+          :value="data.length"
+          is-dot
+          class="item"
+          :hidden="useSocket.isHidden"
+        >
           <svg
             viewBox="0 0 24 24"
             preserveAspectRatio="xMidYMid meet"
@@ -83,13 +88,14 @@ import { useUserStore } from "@/stores/user";
 import { showLogin } from "@/stores/counter";
 import { getTitle } from "@/api/setting";
 import { useSocketStore } from "@/stores/socket";
-const keyword = ref("");
 const useSocket = useSocketStore();
+const keyword = ref("");
 const showLoginState = showLogin();
 const userStore = useUserStore();
 const store = useMainStore();
 const title = ref("弹幕视频网站");
 const data = ref([]);
+const isHidden = ref(true);
 const goSearch = async () => {
   await router.push({
     path: `/search/${keyword.value}/video`,
@@ -104,13 +110,14 @@ const gotoReply = () => {
 onMounted(async () => {
   const res = await getTitle();
   title.value = res.data[0].setting_target;
+  console.log(data.value);
 });
 watchEffect(() => {
   if (useSocket.data) {
-    console.log(useSocket.data);
-
+    if (useSocket.data.length > 0) {
+      useSocket.isHidden = false;
+    }
     data.value = useSocket.data;
-    console.log(data.value);
   }
 });
 const toggleSideBar = () => {
@@ -166,19 +173,19 @@ function showSelectBoxOnHover() {
     display: flex;
     align-items: center;
     .select-box {
-      padding: 0.468658vw;
-      margin-right: 0.792912vw;
+      padding: 8px;
+      margin-right: 13.53px;
       img {
-        width: 1.405975vw;
-        height: 1.405975vw;
+        width: 24px;
+        height: 24px;
         cursor: pointer;
       }
     }
     .img-box {
       cursor: pointer;
       margin-right: 0.275747vw;
-      width: 2vw;
-      height: 2vw;
+      width: 34.14px;
+      height: 34.14px;
       margin-bottom: 0.5175747vw;
       cursor: pointer;
     }
@@ -190,8 +197,8 @@ function showSelectBoxOnHover() {
     }
   }
   .main-header-middle {
-    width: 37.727006vw;
-    height: 2.543292vw;
+    width: 644px;
+    height: 43.4px;
     display: flex;
     align-items: center;
     .header-input-box {

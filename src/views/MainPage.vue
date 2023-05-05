@@ -2,12 +2,12 @@
   <!-- <SideBar></SideBar> -->
   <div class="mainpage-container">
     <div class="top-select-card">
-      <div class="top-select-card-left message">
+      <!-- <div class="top-select-card-left message">
         <img src="@/assets/icon/动态.png" />动态
       </div>
       <div class="top-select-card-left hot">
         <img src="@/assets/icon/热门.png" />热门
-      </div>
+      </div> -->
       <!-- <div class="top-select-card-left channel">
         <img src="@/assets/icon/融合频道.png" />频道
       </div> -->

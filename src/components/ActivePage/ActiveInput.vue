@@ -11,7 +11,7 @@
     />
     <div class="controll">
       <div class="icon">
-        <div class="emoji">
+        <!-- <div class="emoji">
           <svg
             t="1682400984654"
             class="icon"
@@ -28,7 +28,7 @@
               p-id="6075"
             ></path>
           </svg>
-        </div>
+        </div> -->
         <div class="img" @click="dialogTableVisible = true">
           <svg
             t="1682401271641"
@@ -88,6 +88,7 @@ import { ElMessage, type UploadProps, type UploadUserFile } from "element-plus";
 import type { UploadFile } from "element-plus";
 import { postActive } from "@/api/active";
 import { useUserStore } from "@/stores/user";
+import router from "@/router";
 const textarea = ref("");
 const store = useUserStore();
 const isActive = computed(() => {
@@ -123,6 +124,7 @@ const sendSubmit = async () => {
       textarea.value = "";
       fileList.value = [];
       formData = new FormData();
+      router.go(0);
     } else {
       ElMessage.error("发布失败");
       textarea.value = "";
@@ -167,7 +169,7 @@ const handleFileList = async (fileList: UploadFile[]) => {
     }
     .img {
       cursor: pointer;
-      margin-left: 15px;
+
       svg {
         &:hover {
           fill: red;

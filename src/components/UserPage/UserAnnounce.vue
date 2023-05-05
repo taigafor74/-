@@ -3,17 +3,55 @@
     <div ref="head" class="head">公告</div>
     <div class="text-area">
       <textarea
-        ref="textarea"
         rows="4"
         type="textarea"
         placeholder="请输入公告内容"
         maxlength="150"
+        @blur="handleBlur"
+        :disabled="!isMe"
+        v-model="textarea"
       />
     </div>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref, watchEffect, onMounted } from "vue";
+import { useUserStore } from "@/stores/user";
+import { ElMessage } from "element-plus";
+import { ElMessageBox } from "element-plus";
+import { Plus } from "@element-plus/icons-vue";
+import type { UploadProps } from "element-plus";
+import { getInfo, updateDesc } from "@/api/user";
+import { updateAvatar } from "@/api/user";
+import { useRoute } from "vue-router";
+const route = useRoute();
+const isUpload = ref(false);
+const dialogVisible = ref(false);
+const textarea = ref("");
+const customImg = ref<HTMLImageElement>();
+const imageUrl = ref("");
+const updateImg = ref("");
+const store = useUserStore();
+const isMe = ref(false);
+const handleBlur = async () => {
+  const res = await updateDesc(store.id, textarea.value);
+};
+onMounted(async () => {
+  const res = await getInfo(route.params.id);
+  textarea.value = res.data.desc;
+});
+watchEffect(() => {
+  if (store.isLoggedIn) {
+    if (store.id) {
+      if (store.id == route.params.id) {
+        isMe.value = true;
+        console.log("isMe", isMe.value);
+      }
+    }
+  }
+});
+</script>
 <style lang="scss" scoped>
 .user-announce-container {
   width: 100%;

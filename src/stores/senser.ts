@@ -1,12 +1,9 @@
 import { defineStore } from "pinia";
-import { io, Socket } from "socket.io-client";
-export const useSocketStore = defineStore({
-  id: "socket",
+export const useSenserStore = defineStore({
+  id: "senser",
 
   state: () => ({
-    socket: null,
-    data: null,
-    isHidden: true,
+    data: [],
   }),
 
   actions: {
